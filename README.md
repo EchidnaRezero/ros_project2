@@ -26,6 +26,10 @@ docs/
 | `turtlebot3_ws/docs/external_dependencies.md` | 외부에서 받아야 할 코드, 모델, 시스템 의존성 |
 | `turtlebot3_ws/docs/known_path_issues.md` | 현재 백업 구조와 코드 하드코딩 경로 차이 |
 | `docs/auxiliary_code_backup.md` | 보조 코드 백업 폴더 설명 |
+| `docs/RUN_MISSION.md` | Jetson 실사용 실행/종료 절차 |
+| `docs/JETSON_WORK_REF.md` | Jetson 실제 환경과 work_ref 백업 기준 |
+| `docs/JETSON_HARDWARE_SETTINGS.md` | Jetson 포트/하드웨어 기준 |
+| `docs/JETSON_HARDWARE_TROUBLESHOOTING.md` | 라이다, 매니퓰레이터, 토크 문제 기록 |
 
 ## 모델 파일
 
@@ -39,10 +43,10 @@ docs/
 
 | 문서 | 내용 |
 |---|---|
-| `WORKING_NOTES.md` | Jetson 반영 전 작업 기준 |
-| `JETSON_ONLY_RESOURCES.md` | Jetson에만 두는 모델, engine, mp_env 등 |
-| `CLOUDFLARE_QUICKTUNNEL.md` | GitHub Pages UI와 Cloudflare quick tunnel 연결 |
+| `docs/WORKING_NOTES.md` | Jetson 반영 전 작업 기준 |
+| `docs/JETSON_ONLY_RESOURCES.md` | Jetson에만 두는 모델, engine, mp_env 등 |
+| `docs/CLOUDFLARE_QUICKTUNNEL.md` | GitHub Pages UI와 Cloudflare quick tunnel 연결 |
+| `docs/SSH_TAILSCALE_JETSON.md` | Jetson Tailscale SSH 접속 기준 |
+| `docs/LAMBDA_GESTURE_GUIDE.html` | MediaPipe lambda gesture 시각화 |
 
 GitHub Pages용 UI는 이 폴더가 아니라 프로젝트 루트의 `github_pages_robot_ui/`에서 관리한다.
-
-Jetson mission docs synced.
