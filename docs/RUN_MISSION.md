@@ -123,8 +123,8 @@ q) Quit this safety menu only
 
 같은 메뉴는 tmux 안의 `safety` 창에도 있다. tmux에서 보려면 `Ctrl-b` 누른 뒤 `1`을 누른다.
 
-1번은 `/cmd_vel` 0을 여러 번 보낸 뒤 `nav`, `bringup`에 Ctrl-C를 보낸다.
-2번은 `/cmd_vel` 0을 보낸 뒤 `rtree-mission` 전체를 종료한다.
+1번은 `nav`를 먼저 멈춘 뒤 `/cmd_vel` 0을 여러 번 보내고 `bringup`에 Ctrl-C를 보낸다.
+2번은 같은 안전 정지 순서를 수행한 뒤 `rtree-mission` 전체를 종료한다.
 
 전체 종료:
 

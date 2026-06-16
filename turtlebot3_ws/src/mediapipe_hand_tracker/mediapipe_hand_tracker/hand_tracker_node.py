@@ -80,58 +80,12 @@ class HandTrackerNode(Node):
 
     def detect_lambda_sign(self, landmarks):
         thumb_tip = landmarks.landmark[self.mp_hands.HandLandmark.THUMB_TIP]
-        thumb_mcp = landmarks.landmark[self.mp_hands.HandLandmark.THUMB_MCP]
+        thumb_ip = landmarks.landmark[self.mp_hands.HandLandmark.THUMB_IP]
         index_tip = landmarks.landmark[
             self.mp_hands.HandLandmark.INDEX_FINGER_TIP
         ]
-        index_mcp = landmarks.landmark[
-            self.mp_hands.HandLandmark.INDEX_FINGER_MCP
-        ]
-        middle_tip = landmarks.landmark[
-            self.mp_hands.HandLandmark.MIDDLE_FINGER_TIP
-        ]
-        middle_pip = landmarks.landmark[
-            self.mp_hands.HandLandmark.MIDDLE_FINGER_PIP
-        ]
-        ring_tip = landmarks.landmark[
-            self.mp_hands.HandLandmark.RING_FINGER_TIP
-        ]
-        ring_pip = landmarks.landmark[
-            self.mp_hands.HandLandmark.RING_FINGER_PIP
-        ]
-        pinky_tip = landmarks.landmark[self.mp_hands.HandLandmark.PINKY_TIP]
-        pinky_pip = landmarks.landmark[self.mp_hands.HandLandmark.PINKY_PIP]
 
-        tip_dx = thumb_tip.x - index_tip.x
-        tip_dy = thumb_tip.y - index_tip.y
-        tip_distance = (tip_dx * tip_dx + tip_dy * tip_dy) ** 0.5
-
-        tip_distance_max = 0.08
-        base_distance_min = 0.08
-        vertical_margin = 0.03
-
-        tips_are_close = tip_distance <= tip_distance_max
-        tips_are_above_bases = (
-            thumb_tip.y < thumb_mcp.y - vertical_margin and
-            index_tip.y < index_mcp.y - vertical_margin
-        )
-        left_palm_lambda_direction = index_mcp.x < thumb_mcp.x
-        bases_are_separated = (
-            abs(thumb_mcp.x - index_mcp.x) >= base_distance_min
-        )
-        other_fingers_are_folded = (
-            middle_tip.y > middle_pip.y and
-            ring_tip.y > ring_pip.y and
-            pinky_tip.y > pinky_pip.y
-        )
-
-        if (
-            tips_are_close and
-            tips_are_above_bases and
-            left_palm_lambda_direction and
-            bases_are_separated and
-            other_fingers_are_folded
-        ):
+        if thumb_tip.y < thumb_ip.y and index_tip.y > thumb_ip.y:
             return "lambda_sign"
         return "unknown"
 

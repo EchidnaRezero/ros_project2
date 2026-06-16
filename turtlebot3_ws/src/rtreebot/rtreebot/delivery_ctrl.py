@@ -18,17 +18,20 @@ from rclpy.action import ActionClient
 
 from nav2_msgs.action import NavigateToPose
 from geometry_msgs.msg import PoseStamped
+from geometry_msgs.msg import PoseWithCovarianceStamped, Twist
 from std_msgs.msg import String, Bool, Int32
 
 
 class DeliveryNavigator(Node):
     def __init__(self):
         super().__init__('delivery_navigator')
+        self.declare_parameter('max_nav_retries', 2)
 
         # Action client
         self.client = ActionClient(self, NavigateToPose, 'navigate_to_pose')
         self.get_logger().info('Waiting for Nav2 action server...')
         self.client.wait_for_server()
+        self.get_logger().info('Nav2 action server is ready.')
 
         # Subscriptions
         self.move_req_sub = self.create_subscription(
@@ -36,9 +39,18 @@ class DeliveryNavigator(Node):
 
         self.move_resume_sub = self.create_subscription(
             Bool, '/move_resume', self.delivery_finish_callback, 10)
+
+        self.amcl_pose_sub = self.create_subscription(
+            PoseWithCovarianceStamped, '/amcl_pose', self.amcl_pose_callback, 10)
         
         self.move_finish_pub = self.create_publisher(
             Bool, '/move_finish', 10)
+
+        self.mission_status_pub = self.create_publisher(
+            String, '/mission/status', 10)
+
+        self.cmd_vel_pub = self.create_publisher(
+            Twist, '/cmd_vel', 10)
         
         self.mediapipe_start_pub = self.create_publisher(
             String, '/mediapipe/start', 10
@@ -71,6 +83,26 @@ class DeliveryNavigator(Node):
         self.target_room = None
         self.mode = None
         self.item = None
+        self.nav_retry_count = 0
+        self.amcl_pose_ready = False
+
+        self.publish_status(
+            'delivery_navigator ready. Set RViz 2D Pose Estimate before ordering.'
+        )
+
+    def publish_status(self, text):
+        self.get_logger().info(text)
+        self.mission_status_pub.publish(String(data=text))
+
+    def publish_zero_cmd_vel(self):
+        msg = Twist()
+        for _ in range(5):
+            self.cmd_vel_pub.publish(msg)
+
+    def amcl_pose_callback(self, msg):
+        if not self.amcl_pose_ready:
+            self.amcl_pose_ready = True
+            self.publish_status('AMCL pose received. Mission orders are enabled.')
 
     # --------------------------------------------------
     # 1. move_request parsing & validation
@@ -93,6 +125,13 @@ class DeliveryNavigator(Node):
                 f"Valid request received: room={room}, item={item}, mode={mode}"
             )
 
+            if not self.amcl_pose_ready:
+                self.publish_status(
+                    'Rejected move_request: AMCL pose is not ready. '
+                    'Set RViz 2D Pose Estimate first.'
+                )
+                return
+
             self.delivery(room, item, mode)
 
         except Exception as e:
@@ -109,6 +148,7 @@ class DeliveryNavigator(Node):
         self.target_room = room
         self.mode = mode
         self.item = item
+        self.nav_retry_count = 0
         self.send_goal(self.waypoints[room])
 
     def send_goal(self, wp):
@@ -121,7 +161,11 @@ class DeliveryNavigator(Node):
         goal.pose.pose.orientation.z = wp['z']
         goal.pose.pose.orientation.w = wp['w']
 
-        self.get_logger().info("Sending navigation goal...")
+        self.publish_status(
+            f"Sending navigation goal: target={self.target_room}, "
+            f"item={self.item}, mode={self.mode}, "
+            f"x={wp['x']:.3f}, y={wp['y']:.3f}"
+        )
         future = self.client.send_goal_async(goal)
         future.add_done_callback(self.goal_response_callback)
 
@@ -155,10 +199,27 @@ class DeliveryNavigator(Node):
                 self.get_logger().info("Returned to HOME. Waiting for request.")
                 
         else:
-            self.get_logger().warn("Navigation failed. Retrying...")
+            self.publish_status(
+                f"Navigation failed with status={status}. "
+                f"retry={self.nav_retry_count}/{self.get_parameter('max_nav_retries').value}"
+            )
             self.retry_current_goal()
 
     def retry_current_goal(self):
+        max_retries = int(self.get_parameter('max_nav_retries').value)
+        if self.nav_retry_count >= max_retries:
+            self.publish_zero_cmd_vel()
+            self.publish_status(
+                f"Navigation aborted after {self.nav_retry_count} retries. "
+                "Robot stopped. Check AMCL pose, waypoint, and Nav2 logs."
+            )
+            self.waiting_delivery_finish = False
+            self.target_room = None
+            self.mode = None
+            self.item = None
+            return
+
+        self.nav_retry_count += 1
         wp = self.waypoints[self.target_room]
         self.send_goal(wp)
 

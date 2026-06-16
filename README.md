@@ -1,6 +1,6 @@
 # ROS2 Practice Robot Backup
 
-이 저장소는 ROS2 AMR+Manipulator 수업에서 실제 Jetson 환경에 사용한 코드와 보조 실험 코드를 백업한다.
+이 저장소는 ROS2 AMR+Manipulator 수업에서 실제 Jetson 환경에 사용한 코드와 보조 실험 코드를 백업한다. 이 프로젝트에서 임시작업하고 검증된 경우 사용자 승낙하에 젯슨쪽도 동기화한다.
 
 ## 구조
 
@@ -15,7 +15,7 @@ guide/mission/
   미션 화면 자료
 
 docs/
-  프로젝트 루트 기준 설명 문서
+  프로젝트 루트 기준 설명 문서(* turtlebot3_ws\docs 의 docs는 레거시 문서라 그대로 따르면X. 이쪽은 참조하게 되면 사용자에게 물어볼 것. 루트 아래의 docs와는 혼동주의)
 ```
 
 ## 문서

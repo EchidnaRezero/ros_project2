@@ -266,13 +266,14 @@ if [ "$DEBUG_ECHO" -eq 1 ]; then
   debug_cmd=$(cat <<EOF
 $(ros_prefix)
 set +e
-ros2 topic echo /move_request &
-ros2 topic echo /move_finish &
-ros2 topic echo /move_resume &
-ros2 topic echo /mediapipe/start &
-ros2 topic echo /manipulator/motion_id &
-ros2 topic echo /item_detector/start &
-ros2 topic echo /detectnet/result &
+ros2 topic echo /move_request std_msgs/msg/String &
+ros2 topic echo /move_finish std_msgs/msg/Bool &
+ros2 topic echo /move_resume std_msgs/msg/Bool &
+ros2 topic echo /mission/status std_msgs/msg/String &
+ros2 topic echo /mediapipe/start std_msgs/msg/String &
+ros2 topic echo /manipulator/motion_id std_msgs/msg/Int32 &
+ros2 topic echo /item_detector/start std_msgs/msg/Bool &
+ros2 topic echo /detectnet/result std_msgs/msg/String &
 wait
 $(hold)
 EOF
@@ -284,6 +285,7 @@ echo "Useful checks:"
 echo "  ros2 topic echo /move_request"
 echo "  ros2 topic echo /move_finish"
 echo "  ros2 topic echo /move_resume"
+echo "  ros2 topic echo /mission/status"
 echo "  ros2 topic echo /mediapipe/start"
 echo "  ros2 topic echo /manipulator/motion_id"
 echo "  ros2 topic echo /item_detector/start"
