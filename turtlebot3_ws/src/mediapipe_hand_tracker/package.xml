@@ -3,9 +3,9 @@
 <package format="3">
   <name>mediapipe_hand_tracker</name>
   <version>0.0.0</version>
-  <description>TODO: Package description</description>
-  <maintainer email="jetson@todo.todo">jetson</maintainer>
-  <license>TODO: License declaration</license>
+  <description>MediaPipe hand gesture node for delivery-mode manipulator motions</description>
+  <maintainer email="rtree-mission@example.invalid">Rtree Mission Team</maintainer>
+  <license>LicenseRef-Portfolio-Demo</license>
 
   <depend>rclpy</depend>
   <depend>std_msgs</depend>

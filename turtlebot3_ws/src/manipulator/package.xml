@@ -3,9 +3,9 @@
 <package format="3">
   <name>manipulator</name>
   <version>0.0.0</version>
-  <description>TODO: Package description</description>
-  <maintainer email="asilia@todo.todo">asilia</maintainer>
-  <license>TODO: License declaration</license>
+  <description>Dynamixel manipulator motion player for the AMR delivery mission</description>
+  <maintainer email="rtree-mission@example.invalid">Rtree Mission Team</maintainer>
+  <license>LicenseRef-Portfolio-Demo</license>
 
   <depend>rclpy</depend>
   <depend>std_msgs</depend>

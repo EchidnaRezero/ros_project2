@@ -13,10 +13,10 @@ setup(
     ],
     install_requires=['setuptools'],
     zip_safe=True,
-    maintainer='rtree',
-    maintainer_email='tesla0131@ajou.ac.kr',
-    description='TODO: Package description',
-    license='TODO: License declaration',
+    maintainer='Rtree Mission Team',
+    maintainer_email='rtree-mission@example.invalid',
+    description='Object detection result mapper for recall-mode manipulator motions',
+    license='LicenseRef-Portfolio-Demo',
     extras_require={
         'test': [
             'pytest',

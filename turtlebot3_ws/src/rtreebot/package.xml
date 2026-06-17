@@ -4,8 +4,8 @@
   <name>rtreebot</name>
   <version>0.0.0</version>
   <description>WebSocket delivery mission bridge and controller for AMR manipulation mission</description>
-  <maintainer email="jetson@todo.todo">jetson</maintainer>
-  <license>TODO: License declaration</license>
+  <maintainer email="rtree-mission@example.invalid">Rtree Mission Team</maintainer>
+  <license>LicenseRef-Portfolio-Demo</license>
 
   <depend>rclpy</depend>
   <depend>std_msgs</depend>

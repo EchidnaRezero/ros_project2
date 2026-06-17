@@ -1,9 +1,14 @@
 from launch import LaunchDescription
 from launch.actions import ExecuteProcess, TimerAction
 from launch_ros.actions import Node
+import os
 
 
 def generate_launch_description():
+    dynamixel_omx_node = os.environ.get(
+        'DYNAMIXEL_OMX_NODE',
+        os.path.expanduser('~/turtlebot3_ws/src/dynamixel_sdk_examples/src/read_write_node_omx.py')
+    )
 
     # 1️⃣ chmod 먼저
     chmod_dev = ExecuteProcess(
@@ -15,7 +20,7 @@ def generate_launch_description():
     dynamixel_node = ExecuteProcess(
         cmd=[
             'python3',
-            '/home/jetson/turtlebot3_ws/src/DynamixelSDK/ros/dynamixel_sdk_examples/src/read_write_node_omx.py'
+            dynamixel_omx_node
         ],
         output='log'
     )

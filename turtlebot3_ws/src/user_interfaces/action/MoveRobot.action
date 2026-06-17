@@ -1,8 +1,0 @@
-#goal
-float32 distance
----
-#result
-bool success
----
-#feedback
-float32 remined_distance

@@ -1,6 +1,3 @@
-from glob import glob
-import os
-
 from setuptools import find_packages, setup
 
 package_name = 'rtreebot'
@@ -13,15 +10,13 @@ setup(
         ('share/ament_index/resource_index/packages',
             ['resource/' + package_name]),
         ('share/' + package_name, ['package.xml']),
-        (os.path.join('share', package_name, 'web'), glob('web/*')),
-        (os.path.join('share', package_name, 'docs'), glob('docs/*')),
     ],
     install_requires=['setuptools'],
     zip_safe=True,
-    maintainer='jetson',
-    maintainer_email='jetson@todo.todo',
+    maintainer='Rtree Mission Team',
+    maintainer_email='rtree-mission@example.invalid',
     description='WebSocket delivery mission bridge and controller for AMR manipulation mission',
-    license='TODO: License declaration',
+    license='LicenseRef-Portfolio-Demo',
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [

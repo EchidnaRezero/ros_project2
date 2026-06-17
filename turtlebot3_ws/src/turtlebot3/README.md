@@ -20,7 +20,6 @@
 - http://wiki.ros.org/turtlebot3 (metapackage)
 - http://wiki.ros.org/turtlebot3_bringup
 - http://wiki.ros.org/turtlebot3_description
-- http://wiki.ros.org/turtlebot3_example
 - http://wiki.ros.org/turtlebot3_navigation
 - http://wiki.ros.org/turtlebot3_slam
 - http://wiki.ros.org/turtlebot3_teleop
@@ -28,7 +27,6 @@
 ## Open Source related to TurtleBot3
 - [turtlebot3](https://github.com/ROBOTIS-GIT/turtlebot3)
 - [turtlebot3_msgs](https://github.com/ROBOTIS-GIT/turtlebot3_msgs)
-- [turtlebot3_simulations](https://github.com/ROBOTIS-GIT/turtlebot3_simulations)
 - [turtlebot3_applications_msgs](https://github.com/ROBOTIS-GIT/turtlebot3_applications_msgs)
 - [turtlebot3_applications](https://github.com/ROBOTIS-GIT/turtlebot3_applications)
 - [turtlebot3_autorace](https://github.com/ROBOTIS-GIT/turtlebot3_autorace)
@@ -36,11 +34,9 @@
 - [hls_lfcd_lds_driver](https://github.com/ROBOTIS-GIT/hls_lfcd_lds_driver)
 - [open_manipulator_msgs](https://github.com/ROBOTIS-GIT/open_manipulator_msgs)
 - [open_manipulator](https://github.com/ROBOTIS-GIT/open_manipulator)
-- [open_manipulator_simulations](https://github.com/ROBOTIS-GIT/open_manipulator_simulations)
 - [open_manipulator_perceptions](https://github.com/ROBOTIS-GIT/open_manipulator_perceptions)
 - [open_manipulator_with_tb3_msgs](https://github.com/ROBOTIS-GIT/open_manipulator_with_tb3_msgs)
 - [open_manipulator_with_tb3](https://github.com/ROBOTIS-GIT/open_manipulator_with_tb3)
-- [open_manipulator_with_tb3_simulations](https://github.com/ROBOTIS-GIT/open_manipulator_with_tb3_simulations)
 - [dynamixel_sdk](https://github.com/ROBOTIS-GIT/DynamixelSDK)
 - [dynamixel_workbench](https://github.com/ROBOTIS-GIT/dynamixel-workbench)
 - [OpenCR-Hardware](https://github.com/ROBOTIS-GIT/OpenCR-Hardware)

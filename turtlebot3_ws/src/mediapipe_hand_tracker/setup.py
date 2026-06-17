@@ -13,14 +13,14 @@ setup(
     ],
     install_requires=['setuptools'],
     zip_safe=True,
-    maintainer='jetson',
-    maintainer_email='jetson@todo.todo',
-    description='TODO: Package description',
-    license='TODO: License declaration',
+    maintainer='Rtree Mission Team',
+    maintainer_email='rtree-mission@example.invalid',
+    description='MediaPipe hand gesture node for delivery-mode manipulator motions',
+    license='LicenseRef-Portfolio-Demo',
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'hand_tracker_node= mediapipe_hand_tracker.hand_tracker_node:main',
+            'hand_tracker_node = mediapipe_hand_tracker.hand_tracker_node:main',
         ],
     },
 )

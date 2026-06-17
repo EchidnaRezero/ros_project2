@@ -16,10 +16,10 @@ setup(
     ],
     install_requires=['setuptools'],
     zip_safe=True,
-    maintainer='asilia',
-    maintainer_email='asilia@todo.todo',
-    description='TODO: Package description',
-    license='TODO: License declaration',
+    maintainer='Rtree Mission Team',
+    maintainer_email='rtree-mission@example.invalid',
+    description='Dynamixel manipulator motion player for the AMR delivery mission',
+    license='LicenseRef-Portfolio-Demo',
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [

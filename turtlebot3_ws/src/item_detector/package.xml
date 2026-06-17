@@ -3,9 +3,9 @@
 <package format="3">
   <name>item_detector</name>
   <version>0.0.0</version>
-  <description>TODO: Package description</description>
-  <maintainer email="tesla0131@ajou.ac.kr">rtree</maintainer>
-  <license>TODO: License declaration</license>
+  <description>Object detection result mapper for recall-mode manipulator motions</description>
+  <maintainer email="rtree-mission@example.invalid">Rtree Mission Team</maintainer>
+  <license>LicenseRef-Portfolio-Demo</license>
 
   <depend>rclpy</depend>
   <depend>std_msgs</depend>
