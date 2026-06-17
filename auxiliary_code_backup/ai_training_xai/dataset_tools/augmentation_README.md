@@ -11,7 +11,7 @@ build_augmented_voc_dataset.py
 ## 사용 예
 
 ```cmd
-python build_augmented_voc_dataset.py object2 object2_colab_augmented
+python build_augmented_voc_dataset.py --source object2 --output object2_colab_augmented
 ```
 
 입력 `object2`는 VOC 형식이어야 한다.

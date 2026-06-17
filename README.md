@@ -2,6 +2,8 @@
 
 웹 화면에서 물품 배송/회수를 요청하면 Jetson에서 ROS2 로봇이 이동, 인식, 로봇팔 동작, 완료 알림까지 처리하는 프로젝트다.
 
+[Web UI 열기](https://echidnarezero.github.io/ros_project2/web_client/)
+
 ## 무엇을 하는 프로젝트인가
 
 ```text
@@ -25,9 +27,6 @@ Web UI
 | 이동 | TurtleBot3 base, Nav2, LiDAR |
 | 인식 | CSI camera, Jetson Inference, MediaPipe |
 | 조작 | Dynamixel manipulator |
-| Web UI source | `web_client/` |
-| Web UI original | `https://github.com/HisameOgasahara/ros_webclient` |
-| Web UI 주소 | `https://echidnarezero.github.io/ros_project2/web_client/` |
 
 ## 프로젝트 전용 외부 리소스
 
@@ -60,7 +59,7 @@ MAP_FILE=~/turtlebot3_ws/maps/map_6f.yaml ~/turtlebot3_ws/scripts/start_mission_
 그다음:
 
 1. RViz에서 `2D Pose Estimate`로 로봇 시작 위치를 찍는다.
-2. Web UI를 연다: `https://echidnarezero.github.io/ros_project2/web_client/`
+2. [Web UI](https://echidnarezero.github.io/ros_project2/web_client/)를 연다.
 3. `urls` tmux 창에 나온 `wss://...` 주소를 Web UI에 입력한다.
 4. 방 A/B와 물품을 고른 뒤 배송 또는 회수를 누른다.
 5. 상태는 tmux의 `debug`, `mission`, `nav`, `vision`, `manipulator` 창에서 확인한다.

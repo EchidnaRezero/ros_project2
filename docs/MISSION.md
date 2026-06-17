@@ -101,7 +101,7 @@ tmux 창 이동은 `Ctrl-b`를 누른 뒤 창 번호를 누른다.
 3. 요청 예시는 `A_driver_recall`, `B_wrench_recall`이다.
 4. `delivery_ctrl.py`가 Nav2 goal을 보내 목적지로 이동한다.
 5. 목적지 이동 성공 후 `/inference_switch=True`와 `/item_detector/start=True`를 발행한다.
-6. camera node와 item detector가 회수 대상 물품을 찾는다.
+6. camera node와 item detector가 `pen`, `driver`, `block`, `wrench` 중 감지된 물품을 찾는다.
 7. 물품이 확인되면 `/manipulator/motion_id`를 발행한다.
 8. 매니퓰레이터가 회수 motion sequence를 실행한다.
 9. 매니퓰레이터 동작 후 `/move_resume`이 발행된다.
@@ -122,6 +122,7 @@ tmux 창 이동은 `Ctrl-b`를 누른 뒤 창 번호를 누른다.
 - `/move_resume=True`를 받으면 HOME 복귀 goal과 `/move_finish`가 함께 발행된다.
 - 배송 요청은 목적지 이동 성공 후 `/mediapipe/start=<item>`을 발행한다.
 - 회수 요청은 목적지 이동 성공 후 `/inference_switch=True`와 `/item_detector/start=True`를 발행한다.
+- 회수 요청의 `item` 값은 item detector에 전달되지 않는다. detector는 감지된 지원 물품의 motion id를 발행한다.
 - quick tunnel 주소는 실행할 때마다 바뀔 수 있다.
 - `stop_mission_tmux.sh`는 미션 프로세스와 tmux를 끄는 기능이다. Dynamixel torque off는 별도 확인이 필요하다.
 
