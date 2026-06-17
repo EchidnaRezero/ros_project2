@@ -566,41 +566,22 @@ $$
 
 ## 14. `manipulatorGUI.py`의 물리 흐름
 
-```mermaid
-flowchart TD
-    select["Group_ID check<br/>select joints"]
-    torqueOff["torqueOffButton_callback<br/>servo torque weak"]
-    manual["user moves q by hand"]
-    read["readButton_callback<br/>read p(t)"]
-    save["stepReadButton_callback<br/>save current position"]
-    setTime["Run Time / End Delay<br/>set T and hold time"]
-    torqueOn["torqueOnButton_callback<br/>position servo active"]
-    runStep["stepRunButton_callback<br/>publish p star"]
-    runMotion["motionRunButton_callback<br/>play step sequence"]
+GUI 코드 흐름과 ROS interface 기준은 `manipulator_architecture.md` 참고.
 
-    select --> torqueOff --> manual --> read --> save --> setTime --> torqueOn
-    torqueOn --> runStep
-    torqueOn --> runMotion
-```
+이 문서에서 보는 물리 대응:
 
-주요 함수와 물리 의미:
-
-| 함수 | 코드 동작 | 물리 해석 |
-| --- | --- | --- |
-| `readButton_callback()` | `/get_position` 호출 | 현재 $p(t)$ 샘플링 |
-| `stepReadButton_callback()` | current를 saved와 `motions`에 저장 | $p^\ast \leftarrow p(t)$ |
-| `stepRunButton_callback()` | 선택 Step의 position 발행 | $p \rightarrow p^\ast$ 이동 |
-| `run_motion()` | Step sequence 반복 실행 | 관절공간 궤적 재생 |
-| `torqueOnButton_callback()` | `/set_torque true` | 위치 제어 활성화 |
-| `torqueOffButton_callback()` | `/set_torque false` | 수동 티칭 상태 |
+| 코드 이벤트 | 물리 해석 |
+| --- | --- |
+| `/get_position` | 현재 엔코더 위치 $p(t)$ 샘플링 |
+| `save step` | $p^\ast \leftarrow p(t)$ |
+| `/set_position` | $p \rightarrow p^\ast$ 이동 |
+| `/set_torque` | 수동 티칭 상태와 위치 제어 상태 전환 |
 
 ## 15. `manipulatorCtrl.py`의 물리 흐름
 
-`manipulatorCtrl.py`: 저장된 JSON을 읽고 외부 명령으로 Motion 재생
+`manipulatorCtrl.py`의 코드 실행 순서는 `manipulator_architecture.md` 참고.
 
-`saved_motions.json`: 관절공간 궤적 파일
-
-하나의 JSON 파일에 목표 관절자세열, 이동 시간, 유지 시간, 반복 횟수, 다음 Motion 전이 저장
+물리 관점에서 `saved_motions.json`은 목표 관절자세열, 이동 시간, 유지 시간, 반복 횟수, 다음 Motion 전이 묶음.
 
 $$
 \mathtt{saved\_motions.json}
@@ -617,30 +598,6 @@ $$
 | `times[][1]` | `stop_time` | 자세 유지 시간 $H_{m,s}$ |
 | `spin_numbers` | `spin_count` | 같은 궤적 반복 횟수 $R_m$ |
 | `next_motions` | `next_motion` | Motion 간 이산 전이 |
-
-```mermaid
-sequenceDiagram
-    participant Scenario as Scenario Node
-    participant Ctrl as MotionPlayer
-    participant JSON as saved_motions json
-    participant DXL as Dynamixel Motors
-
-    Ctrl->>JSON: load motions, times, next_motions
-    Scenario->>Ctrl: motion_id equals m
-    Ctrl->>Ctrl: select q star sequence
-
-    loop Step s
-        Ctrl->>DXL: publish p star 11 with runtime
-        Ctrl->>DXL: publish p star 12 with runtime
-        Ctrl->>DXL: publish p star 13 with runtime
-        Ctrl->>DXL: publish p star 14 with runtime
-        Ctrl->>DXL: publish p star 15 with runtime
-        Ctrl->>Ctrl: wait run_time
-        Ctrl->>Ctrl: hold end_delay
-    end
-
-    Ctrl->>Scenario: move_resume true
-```
 
 `/manipulator/motion_id`: 상위 시나리오가 보내는 이산 명령
 
@@ -837,203 +794,6 @@ t\ge\sum_s(T_{m,s}+H_{m,s}) \\
 \end{array}
 \end{array}
 $$
-
-### C1/P1: Torque OFF와 수동 티칭
-
-코드:
-
-```python
-motor.set_torque(False)
-```
-
-물리:
-
-$$
-\tau_i^{\mathrm{servo}} \approx 0,
-\qquad
-q_i \leftarrow q_i + \Delta q_i^{\mathrm{human}}
-$$
-
-서보가 자세를 강하게 붙잡는 상태 해제
-
-사람이 외력을 가해 관절좌표 $q$ 직접 변경
-
-### C2/P2: 현재 position 읽기
-
-코드:
-
-```python
-motor.request_position(self.position_response_callback)
-motor.curPosition = response.position
-```
-
-물리:
-
-$$
-p_i(t_{\mathrm{read}})
-=
-\mathrm{encoder}_i(t_{\mathrm{read}})
-$$
-
-$$
-q_i(t_{\mathrm{read}})
-=
-s_i\frac{2\pi}{N}
-\left(
-p_i(t_{\mathrm{read}})-p_{i,0}
-\right)
-$$
-
-GUI의 `current` 칸: 엔코더가 샘플링한 현재 관절 상태
-
-### C3/P3: 현재 자세를 Step 목표로 저장
-
-코드:
-
-```python
-self.motions[self.motion][self.step][motor.dxl_id - 11] = int(text)
-```
-
-물리:
-
-$$
-p^\ast_{m,s,i}
-\leftarrow
-p_i(t_{\mathrm{teach}})
-$$
-
-$$
-q^\ast_{m,s}
-=
-\begin{bmatrix}
-q^\ast_{m,s,1} &
-q^\ast_{m,s,2} &
-\cdots &
-q^\ast_{m,s,5}
-\end{bmatrix}^{T}
-$$
-
-Step 저장: 현재 로봇 자세를 미래에 재생할 목표 관절자세로 채택하는 과정
-
-### C4/P4: runtime과 end delay의 시간 파라미터 결정
-
-코드:
-
-```python
-self.times[motion_index][step_index] = [run_time, end_delay]
-```
-
-물리:
-
-$$
-T_{m,s} = \mathtt{run\_time},
-\qquad
-H_{m,s} = \mathtt{end\_delay}
-$$
-
-$$
-\bar{\dot{q}}_{m,s}
-\approx
-\frac{
-q^\ast_{m,s+1}
--
-q^\ast_{m,s}
-}{
-T_{m,s}
-}
-$$
-
-`runtime`: 평균 관절속도 스케일 결정
-
-`end_delay`: 목표 도달 후 자세 유지 시간 결정
-
-### C5/P5: `/set_position` 기반 관절 운동 시작
-
-코드:
-
-```python
-msg.id = motor_id
-msg.position = target_position
-msg.runtime = run_time
-self.positionPublisher.publish(msg)
-```
-
-물리:
-
-$$
-\mathtt{/set\_position}
-:
-\left(
-i,\ p_i^\ast,\ T
-\right)
-$$
-
-$$
-p_i(t)
-\rightarrow
-p_i^\ast
-\quad
-\mathrm{during}
-\quad
-T
-$$
-
-상위 Python 노드: 목표 position과 이동 시간 전송
-
-하위 Dynamixel 제어 계층: 해당 목표 추종
-
-### C6/P6: 서보 오차가 토크가 되고 동역학을 움직인다
-
-코드 관점: `/set_position` 발행 뒤 Dynamixel 쪽에서 엔코더 피드백 폐루프 구성
-
-물리:
-
-$$
-e_i(t)=q_i^\ast(t)-q_i(t)
-$$
-
-$$
-\tau_i
-=
-K_{p,i}e_i
--K_{d,i}\dot{q}_i
-+K_{i,i}\int e_i\,dt
-$$
-
-$$
-M(q)\ddot{q}
-+C(q,\dot{q})\dot{q}
-+g(q)
-+\tau_f
-=
-\tau
-$$
-
-위치 오차 $e_i$: 서보 토크 $\tau_i$로 변환
-
-이 토크가 실제 링크 관성, 중력, 마찰을 이기며 $q(t)$ 변경
-
-### C7/P7: Motion 완료와 상위 시나리오 재개
-
-코드:
-
-```python
-self.move_resume_pub.publish(Bool(data=True))
-```
-
-물리/이벤트:
-
-$$
-t \ge
-\sum_s
-\left(
-T_{m,s}+H_{m,s}
-\right)
-\quad\Rightarrow\quad
-\mathtt{/move\_resume=True}
-$$
-
-마지막 Step의 이동과 유지 시간 종료 후 매니퓰레이터 동작 완료 이벤트를 상위 시나리오로 전달
 
 ### 한눈에 보는 대응식
 

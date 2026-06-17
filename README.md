@@ -8,18 +8,6 @@
 
 미션 흐름과 실행 순서의 우선 문서는 `docs/MISSION.md`. `guide/mission/s0.png`~`s6.png`는 Web UI 사용자 흐름의 원형 이미지.
 
-```text
-Web UI
-  -> WebSocket tunnel
-  -> Jetson ROS2 bridge
-  -> Nav2 이동
-  -> 카메라/손동작 인식
-  -> Dynamixel manipulator 동작
-  -> Web UI 완료 표시
-```
-
-사용자는 웹에서 방과 물품 선택. 로봇은 목적지로 이동한 뒤 배송이면 손동작 확인, 회수면 카메라로 물품 인식. 이후 로봇팔이 저장된 동작 실행.
-
 ## 사용 환경
 
 | 항목 | 내용 |
@@ -50,28 +38,7 @@ Web UI
 
 ## 실행 방법
 
-Jetson에서:
-
-```bash
-cd ~/turtlebot3_ws
-source /opt/ros/galactic/setup.bash
-source install/setup.bash
-MAP_FILE=~/turtlebot3_ws/maps/map_6f.yaml ~/turtlebot3_ws/scripts/start_mission_tmux.sh
-```
-
-그다음:
-
-1. RViz에서 `2D Pose Estimate`로 로봇 시작 위치 지정.
-2. [Web UI](https://echidnarezero.github.io/ros_project2/web_client/) 열기.
-3. `urls` tmux 창에 나온 `wss://...` 주소를 Web UI에 입력.
-4. 방 A/B와 물품을 고른 뒤 배송 또는 회수 선택.
-5. tmux의 `debug`, `mission`, `nav`, `vision`, `manipulator` 창에서 상태 확인.
-
-종료:
-
-```bash
-~/turtlebot3_ws/scripts/stop_mission_tmux.sh
-```
+실행 순서와 종료 방법은 `docs/MISSION.md` 참고.
 
 ## 문서
 

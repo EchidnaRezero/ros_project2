@@ -110,12 +110,7 @@ tmux 창 이동은 `Ctrl-b`를 누른 뒤 창 번호 입력.
 
 ## 물품별 motion id
 
-| 물품 | motion id |
-|---|---:|
-| `block` | 1 |
-| `wrench` | 2 |
-| `driver` | 3 |
-| `pen` | 4 |
+물품별 motion id 기준은 `docs/CODEBASE.md` 참고.
 
 ## 실제 코드 기준 주의점
 
@@ -128,12 +123,12 @@ tmux 창 이동은 `Ctrl-b`를 누른 뒤 창 번호 입력.
 
 ## 확인용 ROS2 토픽
 
+주요 토픽 목록은 `docs/CODEBASE.md` 참고.
+
+실행 중 상태 확인:
+
 ```bash
-ros2 topic list
 ros2 topic echo /move_request
-ros2 topic echo /mediapipe/start
-ros2 topic echo /manipulator/motion_id
-ros2 topic echo /move_resume
 ros2 topic echo /move_finish
 ros2 topic hz /scan
 ```

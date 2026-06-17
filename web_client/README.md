@@ -2,29 +2,11 @@
 
 ## 실행
 
-1. Jetson에서 아래 명령어 하나만 실행
-
-```bash
-~/turtlebot3_ws/scripts/start_mission_tmux.sh
-```
-
-2. 브라우저에서 웹 UI 열기
+브라우저에서 웹 UI 열기
 
 [Robot Delivery UI 열기](https://echidnarezero.github.io/ros_project2/web_client/)
 
-3. Jetson tmux의 `urls` 창에 나온 `wss://...trycloudflare.com` 주소를 웹 UI 상단 입력칸에 붙여넣고 `연결` 선택
-
-`urls` 창 출력 예시:
-
-```text
-Open UI:
-https://echidnarezero.github.io/ros_project2/web_client/
-
-Paste into UI:
-wss://...trycloudflare.com
-```
-
-상태가 `연결됨`이면 주문 전송
+Jetson 실행 순서는 `docs/MISSION.md`, WSS 주소와 tunnel 기준은 `docs/NETWORK.md` 참고.
 
 ## 주문/회수
 
@@ -53,12 +35,8 @@ q) Quit this safety menu only
 
 미션 실행 때 나온 같은 `wss://...trycloudflare.com` 주소 입력 후 `Connect` 선택
 
-연결 성공 시 GitHub Pages -> Cloudflare -> Jetson WebSocket 경로 정상
+연결 성공 시 GitHub Pages, Cloudflare, Jetson WebSocket 경로 정상
 
 ## 종료
 
-Jetson에서:
-
-```bash
-~/turtlebot3_ws/scripts/stop_mission_tmux.sh
-```
+종료 방법은 `docs/MISSION.md` 참고.

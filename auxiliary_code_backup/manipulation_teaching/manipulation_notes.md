@@ -4,21 +4,9 @@
 
 ROS2 기반 로봇팔 매니퓰레이션 실습 기록
 
-로봇팔은 Dynamixel XL430 계열 모터 5개를 사용하며, GUI를 통해 로봇팔 자세를 직접 티칭하고 저장한 뒤 ROS2 토픽으로 모션 번호를 호출해 실행하는 구조
+로봇팔은 Dynamixel XL430 계열 모터 5개를 사용. GUI 티칭과 자동 재생 구조는 `manipulator_architecture.md`, 물리 해석은 `robot_motion_physics.md` 참고.
 
-전체 흐름:
-
-```text
-Torque OFF
--> 손으로 로봇팔 자세를 잡음
--> 현재 Dynamixel 위치값 읽기
--> Step에 저장
--> 여러 Step을 Motion으로 구성
--> saved_motions.json에 저장
--> /manipulator/motion_id 토픽으로 Motion 실행
-```
-
-핵심: 로봇팔 동작은 "좌표"나 "방향"으로 직접 저장되지 않고, 각 Dynamixel 모터의 위치값 조합으로 저장
+이 문서는 실습 중 확인한 위치값, torque 상태, 가동 범위, overflow 로그 중심 기록.
 
 ## 2. 하드웨어 구성과 모터 ID
 
@@ -48,105 +36,9 @@ ID15 = 3284
 
 이 숫자 조합 하나가 Step이며, 여러 Step의 순차 실행으로 하나의 Motion 구성
 
-## 3. Joint State, 자유도, Local Joint Angle
+## 3. Joint State 관점
 
-먼저 잡아야 할 개념: Dynamixel 숫자들이 로봇팔의 자유도 상태를 표현
-
-로봇팔 상태: 다음 joint state 벡터로 해석 가능
-
-```text
-q = [q11, q12, q13, q14, q15]
-
-q11 = ID11 바닥 회전 관절 값
-q12 = ID12 어깨 관절 값
-q13 = ID13 팔꿈치 관절 값
-q14 = ID14 손목 관절 값
-q15 = ID15 그리퍼 관절 값
-```
-
-ID 11~15의 5개 값: 이 로봇팔의 주요 자유도 상태
-
-GUI에서 저장하는 Step: 사실상 이 joint state 한 장면 저장
-
-중요한 점: 이 값들은 공통 월드 좌표계 기준 각도가 아니라 각 모터 출력축 기준의 local joint angle
-
-```text
-ID11 = 2048
-ID12 = 2048
-ID13 = 2048
-```
-
-이라고 해서 세 관절이 공간에서 같은 방향을 본다는 뜻은 아님
-
-각 모터마다 자기 출력축 기준의 2048 위치를 의미
-
-모터의 조립 방향, 혼 체결 방향, 브래킷 방향 차이로 같은 숫자라도 실제 로봇팔에서 보이는 자세 차이 가능
-
-이 값들의 해석:
-
-```text
-각 Dynamixel position value = 각 모터의 local joint value
-ID11~ID15 전체 조합 = 로봇팔의 joint state
-joint state + 링크 구조 + 조립 방향 = 실제 end-effector 위치와 자세
-```
-
-이 개념은 TF와도 연결
-
-TF: 링크와 좌표계 사이의 위치/회전 관계 표현
-
-joint value: 그 TF 관계를 만들어내는 관절 변수
-
-관절값 변경 시 링크들의 TF도 변경되고, 최종적으로 그리퍼의 위치와 방향도 변경
-
-로봇팔 계층 구조:
-
-```text
-base_link
-  -> joint11(q11)
-    -> link1
-      -> joint12(q12)
-        -> link2
-          -> joint13(q13)
-            -> link3
-              -> joint14(q14)
-                -> wrist/link4
-                  -> joint15(q15)
-                    -> gripper
-```
-
-여기서 ID11 회전 시 ID12~ID15의 숫자 자체는 함께 변하지 않음
-
-```text
-ID11 값: 변함
-ID12 값: 그대로
-ID13 값: 그대로
-ID14 값: 그대로
-ID15 값: 그대로
-```
-
-하지만 공간상으로는 ID12~ID15가 붙어 있는 팔 전체가 ID11의 회전에 따라 함께 회전
-
-숫자는 local joint 기준으로 그대로지만, 월드 좌표계에서의 팔과 그리퍼 위치는 변경
-
-비유: 사람이 팔꿈치를 접은 상태로 몸통을 돌리는 상황
-
-```text
-팔꿈치 각도는 그대로
-몸통 방향은 바뀜
-손의 월드 좌표 위치는 바뀜
-```
-
-특정 관절 하나의 숫자만으로 그리퍼의 실제 위치 파악 불가
-
-그리퍼의 실제 위치와 자세: 전체 joint state를 링크 구조에 따라 순서대로 적용해야 산출
-
-```text
-end_effector_pose = T11(q11) * T12(q12) * T13(q13) * T14(q14) * T15(q15)
-```
-
-이 관계: forward kinematics의 기본 감각
-
-이 실습의 GUI: forward kinematics 계산 표시 도구라기보다, 사람이 직접 joint state를 티칭하고 저장하는 도구에 가까움
+ID 11~15의 position 조합이 로봇팔의 joint state 역할. local joint angle, TF, forward kinematics 해석은 `robot_motion_physics.md` 참고.
 
 ## 4. Dynamixel 위치값의 의미
 
@@ -187,59 +79,17 @@ ID15 = 3280 부근: 그리퍼가 닫힌 자세
 
 이런 기록은 나중에 모션 디버깅이나 면접 설명에서 "숫자가 어떤 물리 상태를 의미했는지" 설명할 때 유용
 
-## 5. 토크 ON/OFF의 의미
+## 5. Torque 관측 기준
 
-GUI의 ON/OFF 버튼: Torque Enable 상태 전환 버튼
+Torque ON/OFF와 GUI 티칭 절차는 `manipulator_architecture.md` 참고.
 
-```text
-Torque OFF:
-  모터 출력 해제
-  손으로 로봇팔 관절 이동 가능
-  위치 센서와 통신 유지, current position 계속 읽기 가능
+이 실습에서 중요한 관측점:
 
-Torque ON:
-  모터 출력 활성화
-  현재 위치 또는 목표 위치 유지
-  run step/run motion 명령 시 목표 위치로 이동
-```
+- Torque OFF는 센서 비활성화가 아니므로 present position 읽기 가능
+- 손으로 관절을 움직이면 출력축 회전에 따라 current position 값 갱신
+- 안전한 motion 저장은 `0~4095` 범위 확인 뒤 진행
 
-중요한 점: Torque OFF는 센서 비활성화가 아님
-
-모터 몸통은 브래킷에 고정되어 있지만, 출력축과 혼이 팔 링크에 연결된 구조
-
-손으로 팔을 움직이면 출력축 회전
-
-Dynamixel 내부 위치 센서가 이 출력축의 회전 상태를 읽고 current position 값 갱신
-
-## 6. GUI 티칭 흐름
-
-자세 하나 저장 시 기본 순서:
-
-```text
-1. Motion과 Step 선택
-2. Torque OFF
-3. 손으로 로봇팔 자세 잡기
-4. Torque ON
-5. read positions from dxl
-6. current 값 확인
-7. save step
-8. saved 값 확인
-9. run step으로 테스트
-```
-
-`current`와 `saved`의 의미:
-
-```text
-current:
-  지금 실제 모터의 위치값
-
-saved:
-  현재 선택한 Step에 저장된 목표 위치값
-```
-
-`run step` 클릭 시 saved 값이 Goal Position으로 전송
-
-## 7. 실습 중 확인한 모터 상태
+## 6. 실습 중 확인한 모터 상태
 
 DynamixelSDK로 ID 11~15의 상태 직접 확인
 
@@ -306,7 +156,7 @@ ID15
 6. hardware error = 0으로 모터 내부 에러 없음
 ```
 
-## 8. Goal Position Limit과 Present Position의 차이
+## 7. Goal Position Limit과 Present Position의 차이
 
 실습 중 확인한 중요한 차이:
 
@@ -342,7 +192,7 @@ current 값이 0~4095 안에 있을 때만 save step
 0보다 작거나 4095보다 크면 저장하지 않음
 ```
 
-## 9. 음수/초과값 관련 로그와 분석
+## 8. 음수/초과값 관련 로그와 분석
 
 특정 방향으로 관절을 움직이면서 current 값이 0을 향해 감소하다가, 0 아래로 내려가는 구간에서 노드 종료 문제 발생
 
@@ -380,7 +230,7 @@ response.position = dxl_present_position
 
 이 문제는 "모터가 물리적으로 고장났다"기보다, `Present Position` readback 값을 ROS2 int32 응답에 그대로 넣으면서 생긴 signed/unsigned 해석 문제로 판단
 
-## 10. 코드 수정 검토
+## 9. 코드 수정 검토
 
 초기 수정 방안으로 `% 4096` 정규화 고려
 
@@ -442,7 +292,7 @@ if goal_position < 0 or goal_position > 4095:
 
 예를 들어 `5636`을 자동으로 `1540`으로 바꿔 실행하면, 사용자가 잘못 저장된 모션을 알아차리기 어려움
 
-## 11. 실제 가동 범위 기록의 필요성
+## 10. 실제 가동 범위 기록의 필요성
 
 제조사/모터 기준 범위와 실제 로봇팔의 안전 범위는 다름
 
@@ -557,7 +407,7 @@ ID15:
   물건별 안정적으로 잡히는 값을 추가로 기록하면 좋음
 ```
 
-## 12. 포트폴리오/면접에서 설명하기 좋은 포인트
+## 11. 포트폴리오/면접에서 설명하기 좋은 포인트
 
 이 실습: 단순 GUI 조작이 아니라 실제 하드웨어 로그 기반 위치값과 제어 흐름 분석 경험으로 정리 가능
 
@@ -607,7 +457,7 @@ GUI 티칭 과정에서 발생한 Present Position overflow 문제를 로그로 
 readback은 signed 변환으로 노드 크래시를 막고, 모션 저장/실행 시에는 0~4095 범위를 검증하는 방향이 안전하다는 판단
 ```
 
-## 13. 참고
+## 12. 참고
 
 - ROBOTIS XL430-W250-T e-Manual  
   https://emanual.robotis.com/docs/en/dxl/x/xl430-w250/
