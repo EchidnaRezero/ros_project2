@@ -2,6 +2,8 @@
 
 웹 화면에서 물품 배송/회수를 요청하면 Jetson에서 ROS2 로봇이 이동, 인식, 로봇팔 동작, 완료 알림까지 처리하는 프로젝트.
 
+[포트폴리오 PDF](docs/portfolio/ros_project2_portfolio.pdf) / [포트폴리오 PPTX](docs/portfolio/ros_project2_portfolio.pptx)
+
 [Web UI 열기](https://echidnarezero.github.io/ros_project2/web_client/)
 
 ## 무엇을 하는 프로젝트인가
