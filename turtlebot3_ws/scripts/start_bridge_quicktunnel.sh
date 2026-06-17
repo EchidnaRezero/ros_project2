@@ -5,8 +5,8 @@ WS_PORT="${WS_PORT:-3000}"
 ROS_DISTRO_SETUP="${ROS_DISTRO_SETUP:-/opt/ros/galactic/setup.bash}"
 WORKSPACE_SETUP="${WORKSPACE_SETUP:-$HOME/turtlebot3_ws/install/setup.bash}"
 URL_SUMMARY_FILE="${URL_SUMMARY_FILE:-}"
-GITHUB_PAGES_URL="${GITHUB_PAGES_URL:-https://hisameogasahara.github.io/ros_webclient/}"
-GITHUB_PAGES_DEBUG_URL="${GITHUB_PAGES_DEBUG_URL:-https://hisameogasahara.github.io/ros_webclient/debug.html}"
+GITHUB_PAGES_URL="${GITHUB_PAGES_URL:-https://echidnarezero.github.io/ros_project2/web_client/}"
+GITHUB_PAGES_DEBUG_URL="${GITHUB_PAGES_DEBUG_URL:-https://echidnarezero.github.io/ros_project2/web_client/debug.html}"
 
 if ! command -v cloudflared >/dev/null 2>&1; then
   echo "cloudflared is not installed or not in PATH." >&2

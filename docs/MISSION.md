@@ -35,7 +35,7 @@ systemctl is-active nvargus-daemon
 |---|---|
 | Workspace | `~/turtlebot3_ws` |
 | ROS2 | Galactic |
-| Web UI | `https://hisameogasahara.github.io/ros_webclient/` |
+| Web UI | `https://echidnarezero.github.io/ros_project2/web_client/` |
 | 지도 | `~/turtlebot3_ws/maps/map_6f.yaml` |
 
 ## 실행 순서
@@ -52,7 +52,7 @@ MAP_FILE=~/turtlebot3_ws/maps/map_6f.yaml ~/turtlebot3_ws/scripts/start_mission_
 그다음:
 
 1. RViz에서 `2D Pose Estimate`로 로봇의 시작 위치와 방향을 찍는다.
-2. Web UI를 연다: `https://hisameogasahara.github.io/ros_webclient/`
+2. Web UI를 연다: `https://echidnarezero.github.io/ros_project2/web_client/`
 3. `urls` tmux 창에 표시된 `wss://<TUNNEL_WSS_URL>` 주소를 Web UI에 입력한다.
 4. 방 A 또는 B를 선택한다.
 5. `driver`, `block`, `pen`, `wrench` 중 물품을 선택한다.

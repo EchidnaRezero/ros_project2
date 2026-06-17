@@ -25,14 +25,26 @@ Web UI
 | 이동 | TurtleBot3 base, Nav2, LiDAR |
 | 인식 | CSI camera, Jetson Inference, MediaPipe |
 | 조작 | Dynamixel manipulator |
-| Web UI | `https://github.com/HisameOgasahara/ros_webclient` |
-| Web UI 주소 | `https://hisameogasahara.github.io/ros_webclient/` |
+| Web UI source | `web_client/` |
+| Web UI original | `https://github.com/HisameOgasahara/ros_webclient` |
+| Web UI 주소 | `https://echidnarezero.github.io/ros_project2/web_client/` |
 
 ## 프로젝트 전용 외부 리소스
 
 | 리소스 | 링크 | 용도 |
 |---|---|---|
 | `ssd-mobilenet.onnx` | `https://huggingface.co/pomupomu2/ros2` | 회수 물품 인식 모델 본체 |
+
+## 아카이브와 재현 기준
+
+이 저장소는 당시 Jetson 실행 환경을 보존하기 위한 아카이브 성격의 코드베이스다. 일부 경로는 범용 배포용으로 추상화하지 않고 Jetson 기준값을 그대로 남겼다.
+
+| 경로 | 의미 |
+|---|---|
+| `/home/jetson/turtlebot3_ws` | Jetson의 ROS2 workspace 기준 경로 |
+| `/home/jetson/mp_env` | MediaPipe 실행용 Python 가상환경 기준 경로 |
+
+재현할 때는 위 경로에 맞춰 workspace와 venv를 구성하거나, 리팩토링 시 환경변수/ROS parameter/package share 경로 기준으로 바꾸면 된다.
 
 ## 실행 방법
 
@@ -48,7 +60,7 @@ MAP_FILE=~/turtlebot3_ws/maps/map_6f.yaml ~/turtlebot3_ws/scripts/start_mission_
 그다음:
 
 1. RViz에서 `2D Pose Estimate`로 로봇 시작 위치를 찍는다.
-2. Web UI를 연다: `https://hisameogasahara.github.io/ros_webclient/`
+2. Web UI를 연다: `https://echidnarezero.github.io/ros_project2/web_client/`
 3. `urls` tmux 창에 나온 `wss://...` 주소를 Web UI에 입력한다.
 4. 방 A/B와 물품을 고른 뒤 배송 또는 회수를 누른다.
 5. 상태는 tmux의 `debug`, `mission`, `nav`, `vision`, `manipulator` 창에서 확인한다.
@@ -69,6 +81,7 @@ MAP_FILE=~/turtlebot3_ws/maps/map_6f.yaml ~/turtlebot3_ws/scripts/start_mission_
 | `docs/NETWORK.md` | Web UI, WebSocket bridge, tunnel, SSH/Tailscale 기준 |
 | `docs/AUXILIARY.md` | 모델 학습, XAI, 네트워크 테스트 등 보조 자료 |
 | `docs/issues/` | 경로 문제, 하드웨어 문제, LiDAR/pose 문제 기록 |
+| `web_client/` | GitHub Pages용 정적 Web UI |
 
 ## 마스킹 기준
 

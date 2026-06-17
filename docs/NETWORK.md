@@ -4,7 +4,7 @@
 
 ```text
 브라우저 UI
-  -> GitHub Pages ros_webclient
+  -> GitHub Pages web_client
   -> wss://<TUNNEL_WSS_URL>
   -> Jetson tunnel process
   -> ROS2 WebSocket bridge
@@ -15,8 +15,11 @@
 
 | 항목 | 값 |
 |---|---|
-| Repository | `https://github.com/HisameOgasahara/ros_webclient` |
-| Pages URL | `https://hisameogasahara.github.io/ros_webclient/` |
+| Repository | `https://github.com/EchidnaRezero/ros_project2` |
+| Web UI source | `web_client/` |
+| Original Web UI | `https://github.com/HisameOgasahara/ros_webclient` |
+| Pages URL | `https://echidnarezero.github.io/ros_project2/web_client/` |
+| Debug URL | `https://echidnarezero.github.io/ros_project2/web_client/debug.html` |
 | 입력할 서버 주소 | `wss://<TUNNEL_WSS_URL>` |
 
 Web UI에서 방, 물품, 배송/회수 요청을 입력한다.
