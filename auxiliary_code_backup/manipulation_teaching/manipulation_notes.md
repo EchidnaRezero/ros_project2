@@ -4,7 +4,7 @@
 
 ROS2 기반 로봇팔 매니퓰레이션 실습 기록
 
-로봇팔은 Dynamixel XL430 계열 모터 5개를 사용. GUI 티칭과 자동 재생 구조는 `manipulator_architecture.md`, 물리 해석은 `robot_motion_physics.md` 참고.
+로봇팔은 Dynamixel XL430 계열 모터 5개를 사용. GUI 티칭과 자동 재생 구조는 `manipulator_architecture.md` 참고.
 
 이 문서는 실습 중 확인한 위치값, torque 상태, 가동 범위, overflow 로그 중심 기록.
 
@@ -38,7 +38,7 @@ ID15 = 3284
 
 ## 3. Joint State 관점
 
-ID 11~15의 position 조합이 로봇팔의 joint state 역할. local joint angle, TF, forward kinematics 해석은 `robot_motion_physics.md` 참고.
+ID 11~15의 position 조합이 로봇팔의 joint state 역할.
 
 ## 4. Dynamixel 위치값의 의미
 

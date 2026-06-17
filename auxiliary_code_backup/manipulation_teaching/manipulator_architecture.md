@@ -147,7 +147,44 @@ JSON 저장 시 함께 저장되는 값:
 }
 ```
 
-## 5. GUI 티칭 흐름
+`manipulatorCtrl.py` 자동 실행 기준:
+
+| JSON key | 사용 여부 | 역할 |
+| --- | --- | --- |
+| `motions` | 사용 | 실행할 Step별 Dynamixel position |
+| `times` | 사용 | Step별 `run_time`, `end_delay` |
+| `next_motions` | 사용 | 현재 Motion 뒤 자동 실행할 Motion |
+| `spin_numbers` | 미사용 | GUI의 수동 `run motion` 반복 실행에서 사용 |
+
+## 5. `/set_position`과 Dynamixel register
+
+GUI와 Ctrl 노드는 모두 `/set_position`에 `SetPosition` 메시지 발행.
+
+```text
+uint8 id
+int32 position
+float32 runtime
+```
+
+Dynamixel low-level node는 이 값을 register write로 변환.
+
+| 메시지 필드 | 하위 노드 처리 |
+| --- | --- |
+| `id` | 대상 Dynamixel ID |
+| `position` | `ADDR_GOAL_POSITION`에 기록 |
+| `runtime` | `ADDR_PROFILE_VELOCITY`, `ADDR_PROFILE_ACCELERATION` 계산에 사용 |
+
+관련 register:
+
+```text
+ADDR_PROFILE_VELOCITY = 112
+ADDR_PROFILE_ACCELERATION = 108
+ADDR_GOAL_POSITION = 116
+```
+
+`runtime`은 Python 노드에서 궤적을 직접 계산하는 값이 아니라 Dynamixel profile register에 넘기는 입력값.
+
+## 6. GUI 티칭 흐름
 
 ```mermaid
 sequenceDiagram
@@ -184,7 +221,7 @@ sequenceDiagram
     GUI->>JSON: motions, times, spin_numbers, next_motions 저장
 ```
 
-## 6. GUI에서 run motion 동작
+## 7. GUI에서 run motion 동작
 
 `run motion` 버튼 클릭 시 현재 선택된 Motion의 Step 순차 실행
 
@@ -212,7 +249,7 @@ flowchart TD
     stop -. 중단 플래그 .-> spinLoop
 ```
 
-## 7. 자동 실행 노드 동작
+## 8. 자동 실행 노드 동작
 
 `manipulatorCtrl.py`: GUI 없이 저장된 JSON 재생
 
@@ -244,7 +281,7 @@ sequenceDiagram
     end
 ```
 
-## 8. 코드별 역할 정리
+## 9. 코드별 역할 정리
 
 ### `manipulatorGUI.py`
 
@@ -278,7 +315,7 @@ sequenceDiagram
 - Dynamixel low-level node 실행
 - `manipulatorCtrl` 실행
 
-## 9. 한 줄 요약
+## 10. 한 줄 요약
 
 ```mermaid
 flowchart LR
