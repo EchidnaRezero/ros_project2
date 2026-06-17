@@ -1,6 +1,8 @@
 # Object2 Colab Notebook Runtime Files
 
-현재 `colab_object2_train.ipynb`와 Colab 학습에 사용한 보조 파일을 보관한 묶음이다. 이 폴더의 파일은 백업용으로 평평하게 놓여 있다.
+현재 `colab_object2_train.ipynb`와 Colab 학습에 사용한 보조 파일 보관 묶음
+
+이 폴더의 파일은 백업용 평면 배치
 
 ## 포함
 
@@ -16,9 +18,9 @@ ONNX_CONVERSION_NOTES.md
 
 ## 전제
 
-기존 MobileNetV1-SSD 학습 코드와 `object2_colab_augmented.zip`은 별도로 둔다.
+기존 MobileNetV1-SSD 학습 코드와 `object2_colab_augmented.zip`은 별도 보관
 
-Colab 실행 시에는 노트북과 스크립트가 아래 배치를 전제로 한다.
+Colab 실행 시 노트북과 스크립트의 전제 배치:
 
 ```text
 training_code/tools/audit_voc_dataset.py

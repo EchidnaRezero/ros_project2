@@ -1,16 +1,18 @@
 # Robot Motion Physics for This Code
 
-이 문서는 현재 매니퓰레이터 코드의 변수, 함수, 토픽을 로봇 물리 개념과 연결해서 설명합니다. 중심 물리량은 관절 위치 $q$, 엔코더 위치 $p$, 목표 위치 $q^\ast$, 이동 시간 $T$, 모터 토크 $\tau$입니다.
+현재 매니퓰레이터 코드의 변수, 함수, 토픽을 로봇 물리 개념과 연결한 정리
+
+중심 물리량: 관절 위치 $q$, 엔코더 위치 $p$, 목표 위치 $q^\ast$, 이동 시간 $T$, 모터 토크 $\tau$
 
 ## 1. 코드가 다루는 물리량
 
-현재 로봇팔은 Dynamixel 5개를 관절로 사용합니다.
+현재 로봇팔: Dynamixel 5개를 관절로 사용
 
 ```python
 DXL_IDS = [11, 12, 13, 14, 15]
 ```
 
-물리적으로는 5자유도 관절좌표계입니다.
+물리 해석: 5자유도 관절좌표계
 
 $$
 q =
@@ -19,7 +21,7 @@ q_1 & q_2 & q_3 & q_4 & q_5
 \end{bmatrix}^{T}
 $$
 
-코드는 관절각 $q_i$에 대응되는 Dynamixel 엔코더 position $p_i$를 저장하고 재생합니다.
+코드 동작: 관절각 $q_i$에 대응되는 Dynamixel 엔코더 position $p_i$ 저장 및 재생
 
 $$
 p =
@@ -28,13 +30,13 @@ p_{11} & p_{12} & p_{13} & p_{14} & p_{15}
 \end{bmatrix}^{T}
 $$
 
-`manipulatorGUI.py`의 내부 배열은 이 $p$ 벡터를 Motion/Step 단위로 저장합니다.
+`manipulatorGUI.py`의 내부 배열: 이 $p$ 벡터를 Motion/Step 단위로 저장
 
 ```python
 self.motions[motion_index][step_index]
 ```
 
-물리적으로는 다음 목표 관절자세입니다.
+물리 해석: 다음 목표 관절자세
 
 $$
 p^\ast_{m,s}
@@ -48,7 +50,7 @@ p^\ast_{15}
 \end{bmatrix}^{T}
 $$
 
-코드에서 배열 인덱스는 `dxl_id - 11`로 계산됩니다.
+코드의 배열 인덱스 계산: `dxl_id - 11`
 
 | Dynamixel ID | 배열 인덱스 | 물리 좌표 |
 | --- | ---: | --- |
@@ -60,7 +62,9 @@ $$
 
 ## 2. 엔코더 position과 관절각
 
-Dynamixel raw position $p_i$는 엔코더 tick입니다. 관절각 $q_i$로 해석할 때는 기준점과 방향 부호를 둡니다.
+Dynamixel raw position $p_i$: 엔코더 tick
+
+관절각 $q_i$ 해석 시 기준점과 방향 부호 사용
 
 $$
 q_i = s_i\frac{2\pi}{N}(p_i - p_{i,0})
@@ -74,7 +78,7 @@ $$
 | $s_i$ | 관절 설치 방향에 따른 부호 |
 | $q_i$ | 물리 해석에 사용하는 관절각 |
 
-코드 흐름에서는 $p_i$를 그대로 읽고, 저장하고, 다시 보냅니다.
+코드 흐름: $p_i$를 그대로 읽기, 저장, 재전송
 
 ```mermaid
 flowchart LR
@@ -89,7 +93,7 @@ flowchart LR
 
 ## 3. Step은 목표 관절자세
 
-GUI의 Step 하나는 5개 관절의 목표 position 벡터입니다.
+GUI의 Step 하나: 5개 관절의 목표 position 벡터
 
 ```python
 self.motions[m][s] = [p11, p12, p13, p14, p15]
@@ -107,13 +111,13 @@ $$
 \mathrm{Step}_{m,s} = q^\ast_{m,s}
 $$
 
-`stepReadButton_callback()`은 현재 엔코더 값을 Step 목표값으로 복사합니다.
+`stepReadButton_callback()`: 현재 엔코더 값을 Step 목표값으로 복사
 
 ```python
 self.motions[self.motion][self.step][motor.dxl_id - 11] = int(text)
 ```
 
-물리적으로는 현재 자세 $q(t)$를 목표 자세 $q^\ast_{m,s}$로 기록하는 순간입니다.
+물리 해석: 현재 자세 $q(t)$를 목표 자세 $q^\ast_{m,s}$로 기록하는 순간
 
 $$
 q^\ast_{m,s} \leftarrow q(t_{\mathrm{teach}})
@@ -121,7 +125,7 @@ $$
 
 ## 4. Motion은 관절공간 궤적
 
-Motion 하나는 Step들의 순서열입니다.
+Motion 하나: Step들의 순서열
 
 ```python
 self.motions[motion_index]
@@ -140,7 +144,7 @@ q^\ast_{m,N_m}
 \right\}
 $$
 
-실행 중에는 목표 관절자세가 다음 순서로 바뀝니다.
+실행 중 목표 관절자세 변경 순서:
 
 $$
 q^\ast_{m,1}
@@ -152,7 +156,7 @@ q^\ast_{m,2}
 q^\ast_{m,N_m}
 $$
 
-`run_motion()`과 `execute_motion()`은 이 순서열을 읽고 각 Step의 position을 `/set_position`으로 발행합니다.
+`run_motion()`과 `execute_motion()`: 이 순서열을 읽고 각 Step의 position을 `/set_position`으로 발행
 
 ```mermaid
 flowchart TD
@@ -165,9 +169,9 @@ flowchart TD
     motion --> step1 --> step2 --> step3 --> pub
 ```
 
-## 5. Run Time은 평균 관절속도를 정한다
+## 5. Run Time과 평균 관절속도
 
-각 Step에는 이동 시간과 대기 시간이 붙습니다.
+각 Step 구성: 이동 시간과 대기 시간
 
 ```python
 self.times[motion_index][step_index] = [run_time, end_delay]
@@ -189,7 +193,7 @@ $$
 \frac{p^\ast_{s+1} - p^\ast_s}{T_s}
 $$
 
-`runtime`이 작을수록 같은 position 차이를 더 빠르게 이동합니다.
+`runtime`이 작을수록 같은 position 차이의 이동 속도 증가
 
 $$
 T_s \downarrow
@@ -197,7 +201,7 @@ T_s \downarrow
 \left\lVert \bar{\dot{q}}_s \right\rVert \uparrow
 $$
 
-`end_delay`는 Step 도달 뒤 자세를 유지하는 시간입니다.
+`end_delay`: Step 도달 뒤 자세 유지 시간
 
 $$
 \dot{q} \approx 0,
@@ -207,7 +211,7 @@ $$
 
 ## 6. `/set_position`은 목표 관절 위치 명령
 
-GUI와 Ctrl 노드는 같은 물리 명령을 사용합니다.
+GUI와 Ctrl 노드: 같은 물리 명령 사용
 
 ```python
 msg.id = motor_id
@@ -215,7 +219,7 @@ msg.position = target_position
 msg.runtime = run_time
 ```
 
-수식으로는 $i$번째 관절에 목표값과 이동 시간을 주는 명령입니다.
+수식 해석: $i$번째 관절에 목표값과 이동 시간을 주는 명령
 
 $$
 p_i^\ast \leftarrow \mathtt{msg.position}
@@ -225,7 +229,7 @@ $$
 T \leftarrow \mathtt{msg.runtime}
 $$
 
-Dynamixel 내부 위치 제어기는 목표 위치와 엔코더 피드백의 오차를 줄이는 방향으로 토크를 만듭니다.
+Dynamixel 내부 위치 제어기: 목표 위치와 엔코더 피드백의 오차를 줄이는 방향으로 토크 생성
 
 $$
 e_i(t) = q_i^\ast(t) - q_i(t)
@@ -240,7 +244,7 @@ K_{p,i}e_i
 + K_{i,i}\int e_i\,dt
 $$
 
-코드와 물리 계층은 다음처럼 연결됩니다.
+코드와 물리 계층의 연결:
 
 ```mermaid
 flowchart LR
@@ -257,26 +261,26 @@ flowchart LR
 
 ## 7. `/get_position`은 엔코더 피드백 읽기
 
-`readButton_callback()`은 선택된 모터마다 현재 position을 요청합니다.
+`readButton_callback()`: 선택된 모터마다 현재 position 요청
 
 ```python
 motor.request_position(self.position_response_callback)
 ```
 
-서비스 응답은 다음 값을 GUI에 반영합니다.
+서비스 응답: 다음 값을 GUI에 반영
 
 ```python
 motor.curPosition = response.position
 self.currentLineEdits[dxl_id].setText(str(motor.curPosition))
 ```
 
-물리적으로는 현재 관절 상태를 샘플링하는 과정입니다.
+물리 해석: 현재 관절 상태 샘플링 과정
 
 $$
 p_i(t_{\mathrm{read}}) \rightarrow \mathtt{current}
 $$
 
-이 값이 `save step`에서 목표값으로 저장됩니다.
+이 값은 `save step`에서 목표값으로 저장
 
 $$
 p_i^\ast \leftarrow p_i(t_{\mathrm{read}})
@@ -284,32 +288,32 @@ $$
 
 ## 8. Torque ON/OFF는 서보 활성 상태 전환
 
-`torqueOffButton_callback()`은 선택된 모터의 서보 토크를 약하게 만듭니다.
+`torqueOffButton_callback()`: 선택된 모터의 서보 토크 약화
 
 ```python
 motor.set_torque(False)
 ```
 
-물리적으로는 사용자가 손으로 관절을 움직이기 쉬운 상태입니다.
+물리 해석: 사용자가 손으로 관절을 움직이기 쉬운 상태
 
 $$
 \tau_i^{\mathrm{servo}} \approx 0
 $$
 
-`torqueOnButton_callback()`은 선택된 모터의 위치 제어를 활성화합니다.
+`torqueOnButton_callback()`: 선택된 모터의 위치 제어 활성화
 
 ```python
 motor.set_torque(True)
 ```
 
-물리적으로는 내부 위치 제어기가 목표 자세를 유지하거나 목표 자세로 이동하는 상태입니다.
+물리 해석: 내부 위치 제어기가 목표 자세를 유지하거나 목표 자세로 이동하는 상태
 
 $$
 \tau_i =
 \tau_i^{\mathrm{servo}}(q_i^\ast, q_i, \dot{q}_i)
 $$
 
-티칭 과정은 다음 물리 흐름입니다.
+티칭 과정의 물리 흐름:
 
 ```mermaid
 sequenceDiagram
@@ -330,7 +334,7 @@ sequenceDiagram
 
 ## 9. 정기구학: 저장한 관절자세가 말단 위치를 만든다
 
-말단 위치와 자세는 관절각의 함수입니다.
+말단 위치와 자세: 관절각의 함수
 
 $$
 x = f(q)
@@ -351,7 +355,9 @@ x & y & z
 \end{bmatrix}^{T}
 $$
 
-GUI는 관절공간 목표 $q^\ast$를 저장하고, 로봇 말단은 정기구학에 의해 $x^\ast=f(q^\ast)$ 위치로 갑니다.
+GUI: 관절공간 목표 $q^\ast$ 저장
+
+로봇 말단: 정기구학에 의해 $x^\ast=f(q^\ast)$ 위치로 이동
 
 $$
 q^\ast
@@ -359,7 +365,7 @@ q^\ast
 x^\ast
 $$
 
-DH 파라미터를 사용하면 각 링크 변환은:
+DH 파라미터 사용 시 각 링크 변환:
 
 $$
 {}^{i-1}T_i =
@@ -371,7 +377,7 @@ $$
 \end{bmatrix}
 $$
 
-전체 말단 변환은:
+전체 말단 변환:
 
 $$
 {}^0T_n(q)
@@ -382,11 +388,11 @@ $$
 {}^{n-1}T_n(q_n)
 $$
 
-코드를 읽을 때는 `saved` position 하나가 말단의 한 작업공간 포즈 $x^\ast$를 만드는 입력이라고 보면 됩니다.
+코드 해석: `saved` position 하나를 말단의 한 작업공간 포즈 $x^\ast$를 만드는 입력으로 간주
 
 ## 10. 자코비안: runtime이 말단속도로 번역되는 방식
 
-관절속도와 말단속도는 자코비안으로 연결됩니다.
+관절속도와 말단속도: 자코비안으로 연결
 
 $$
 \dot{x} = J(q)\dot{q}
@@ -400,7 +406,7 @@ $$
 \frac{q^\ast_{s+1}-q^\ast_s}{T_s}
 $$
 
-따라서 평균 말단속도는:
+평균 말단속도:
 
 $$
 \bar{\dot{x}}_s
@@ -409,15 +415,19 @@ J(q)
 \frac{q^\ast_{s+1}-q^\ast_s}{T_s}
 $$
 
-코드의 `Run Time`을 줄이면 관절속도와 말단속도가 함께 커집니다. 같은 `Run Time`이라도 자세 $q$에 따라 $J(q)$가 달라지므로 말단 움직임의 체감 속도도 달라집니다.
+코드의 `Run Time` 감소 시 관절속도와 말단속도 함께 증가
 
-특이점은 자코비안 랭크가 줄어드는 자세입니다.
+같은 `Run Time`이라도 자세 $q$에 따라 $J(q)$가 달라져 말단 움직임의 체감 속도 변화
+
+특이점: 자코비안 랭크가 줄어드는 자세
 
 $$
 \operatorname{rank}J(q) < \min(m,n)
 $$
 
-특이점 근처에서는 일부 방향의 말단 움직임이 커지거나 민감해집니다. 티칭한 두 Step 사이가 이런 자세를 지나면 같은 `runtime`에서도 움직임이 급해 보일 수 있습니다.
+특이점 근처: 일부 방향의 말단 움직임 확대 또는 민감도 증가
+
+티칭한 두 Step 사이가 이런 자세를 지나면 같은 `runtime`에서도 급해 보이는 움직임 가능
 
 ## 11. 동역학: 모터 토크가 실제 팔을 움직인다
 
@@ -455,7 +465,7 @@ $$
 \tau_i
 $$
 
-코드의 `/set_position`은 내부 서보가 $\tau_i$를 만들도록 목표 $q_i^\ast$를 지정하는 명령입니다.
+코드의 `/set_position`: 내부 서보가 $\tau_i$를 만들도록 목표 $q_i^\ast$를 지정하는 명령
 
 $$
 q_i^\ast
@@ -490,7 +500,7 @@ $$
 \frac{q_{s+1}-q_s}{T}
 $$
 
-더 부드러운 시작과 정지를 원하면 3차 보간을 사용합니다.
+더 부드러운 시작과 정지에는 3차 보간 사용
 
 $$
 q_d(t)
@@ -502,7 +512,7 @@ q_s
 2\left(\frac{t}{T}\right)^3(q_{s+1}-q_s)
 $$
 
-가속도까지 부드럽게 맞추는 5차 보간은:
+가속도까지 부드럽게 맞추는 5차 보간:
 
 $$
 q_d(t)
@@ -515,11 +525,15 @@ q_s
 r=\frac{t}{T}
 $$
 
-현재 코드에서 `msg.runtime`은 하위 제어 계층이 목표 이동 시간을 해석하는 입력입니다. 코드 확장 시에는 `run_motion()` 내부에서 $q_d(t)$를 샘플링해 중간 position들을 연속 발행하는 방식으로 더 명시적인 궤적 생성기를 둘 수 있습니다.
+현재 코드의 `msg.runtime`: 하위 제어 계층이 목표 이동 시간을 해석하는 입력
+
+코드 확장 시 `run_motion()` 내부에서 $q_d(t)$를 샘플링해 중간 position들을 연속 발행하는 방식의 명시적 궤적 생성기 구성 가능
 
 ## 13. 중력, 하중, 자세 유지
 
-로봇팔은 링크 자세와 하중에 따라 필요한 토크가 달라집니다. 단일 링크 예시는:
+로봇팔의 필요 토크: 링크 자세와 하중에 따라 변화
+
+단일 링크 예시:
 
 $$
 \tau_g = mgl\sin\theta
@@ -537,14 +551,18 @@ $$
 \tau = J(q)^T F
 $$
 
-그리퍼가 물체를 잡으면 $F$가 커지고, 팔을 뻗은 자세에서는 $J(q)^T F$가 특정 관절에 크게 걸릴 수 있습니다. 이런 상황에서는 같은 Step과 같은 `runtime`이라도 실제 도달 시간, 정착 오차, 진동 양상이 달라집니다.
+그리퍼 파지 시 $F$ 증가
+
+팔을 뻗은 자세에서는 $J(q)^T F$가 특정 관절에 크게 걸릴 가능성
+
+이런 상황에서는 같은 Step과 같은 `runtime`이라도 실제 도달 시간, 정착 오차, 진동 양상 변화
 
 코드와 연결하면:
 
-- `saved` position은 목표 자세를 정한다.
-- `runtime`은 필요한 평균 속도와 가속도 수준을 정한다.
-- 하중과 자세는 서보가 만들어야 하는 $\tau$를 정한다.
-- `end_delay`는 도달 후 진동이 가라앉을 시간을 준다.
+- `saved` position: 목표 자세 결정
+- `runtime`: 필요한 평균 속도와 가속도 수준 결정
+- 하중과 자세: 서보가 만들어야 하는 $\tau$ 결정
+- `end_delay`: 도달 후 진동이 가라앉을 시간 제공
 
 ## 14. `manipulatorGUI.py`의 물리 흐름
 
@@ -578,9 +596,11 @@ flowchart TD
 
 ## 15. `manipulatorCtrl.py`의 물리 흐름
 
-`manipulatorCtrl.py`는 저장된 JSON을 읽고 외부 명령으로 Motion을 재생합니다.
+`manipulatorCtrl.py`: 저장된 JSON을 읽고 외부 명령으로 Motion 재생
 
-`saved_motions.json`은 관절공간 궤적 파일입니다. 하나의 JSON 파일이 목표 관절자세열, 이동 시간, 유지 시간, 반복 횟수, 다음 Motion 전이를 담습니다.
+`saved_motions.json`: 관절공간 궤적 파일
+
+하나의 JSON 파일에 목표 관절자세열, 이동 시간, 유지 시간, 반복 횟수, 다음 Motion 전이 저장
 
 $$
 \mathtt{saved\_motions.json}
@@ -622,7 +642,7 @@ sequenceDiagram
     Ctrl->>Scenario: move_resume true
 ```
 
-`/manipulator/motion_id`는 상위 시나리오가 보내는 이산 명령입니다.
+`/manipulator/motion_id`: 상위 시나리오가 보내는 이산 명령
 
 $$
 \mathtt{motion\_id}=m
@@ -630,7 +650,7 @@ $$
 Q_m\ \mathrm{playback}
 $$
 
-`/move_resume`은 마지막 Step의 이동 시간과 유지 시간이 끝난 뒤 발행되는 완료 이벤트입니다.
+`/move_resume`: 마지막 Step의 이동 시간과 유지 시간이 끝난 뒤 발행되는 완료 이벤트
 
 $$
 t \ge
@@ -644,14 +664,14 @@ H_{m,s}
 \mathtt{/move\_resume=True}
 $$
 
-`execute_motion()`의 핵심 루프는 다음 물리량을 순서대로 사용합니다.
+`execute_motion()`의 핵심 루프: 다음 물리량을 순서대로 사용
 
 ```python
 for step_idx, joint_positions in enumerate(steps):
     move_time, stop_time = times[step_idx]
 ```
 
-수식으로는:
+수식 표현:
 
 $$
 \left(p^\ast_s, T_s, T_{\mathrm{delay},s}\right),
@@ -659,7 +679,9 @@ $$
 s=1,\dots,N
 $$
 
-각 Step마다 5개 관절에 같은 $T_s$가 적용됩니다. 그래서 Step 사이의 관절별 평균속도는:
+각 Step마다 5개 관절에 같은 $T_s$ 적용
+
+Step 사이의 관절별 평균속도:
 
 $$
 \bar{\dot{p}}_{i,s}
@@ -667,11 +689,11 @@ $$
 \frac{p^\ast_{i,s+1}-p^\ast_{i,s}}{T_s}
 $$
 
-관절별 position 차이가 클수록 해당 관절이 더 빠르게 움직입니다.
+관절별 position 차이가 클수록 해당 관절의 이동 속도 증가
 
 ## 16. 티칭 재생 방식의 해석
 
-이 패키지의 제어 스타일은 teach-and-playback joint position control입니다.
+이 패키지의 제어 스타일: teach-and-playback joint position control
 
 ```mermaid
 flowchart LR
@@ -685,7 +707,9 @@ flowchart LR
     qteach --> pteach --> json --> playback --> servo --> motion
 ```
 
-사용자는 실제 로봇팔을 움직여 $q^\ast$를 선택하고, 이 수동 선택 과정이 작업공간 목표 $x^\ast$에 대응되는 관절자세를 정합니다.
+사용자 작업: 실제 로봇팔을 움직여 $q^\ast$ 선택
+
+수동 선택 과정: 작업공간 목표 $x^\ast$에 대응되는 관절자세 결정
 
 $$
 \mathrm{human\ teaching}
@@ -695,7 +719,7 @@ q^\ast
 x^\ast=f(q^\ast)
 $$
 
-물체 위치가 바뀌는 응용에서는 티칭된 $q^\ast$ 위에 시나리오 판단이 붙습니다.
+물체 위치가 바뀌는 응용: 티칭된 $q^\ast$ 위에 시나리오 판단 추가
 
 - 물체 위치별 Motion 선택
 - 카메라 인식 결과에 따른 Step 보정
@@ -704,7 +728,11 @@ $$
 
 ## 17. 코드 플로우와 물리 플로우 대응
 
-아래 다이어그램은 코드 플로우와 물리 플로우를 세로 두 열로 대응시킨 것입니다. 왼쪽 열은 코드 이벤트, 오른쪽 열은 그 이벤트가 의미하는 물리 상태입니다.
+아래 다이어그램: 코드 플로우와 물리 플로우의 세로 대응
+
+왼쪽 열: 코드 이벤트
+
+오른쪽 열: 이벤트가 의미하는 물리 상태
 
 $$
 \begin{array}{c|c}
@@ -826,7 +854,9 @@ $$
 q_i \leftarrow q_i + \Delta q_i^{\mathrm{human}}
 $$
 
-서보가 자세를 강하게 붙잡는 상태를 풀고, 사람이 외력을 가해 관절좌표 $q$를 직접 바꿉니다.
+서보가 자세를 강하게 붙잡는 상태 해제
+
+사람이 외력을 가해 관절좌표 $q$ 직접 변경
 
 ### C2/P2: 현재 position 읽기
 
@@ -854,7 +884,7 @@ p_i(t_{\mathrm{read}})-p_{i,0}
 \right)
 $$
 
-GUI의 `current` 칸은 엔코더가 샘플링한 현재 관절 상태입니다.
+GUI의 `current` 칸: 엔코더가 샘플링한 현재 관절 상태
 
 ### C3/P3: 현재 자세를 Step 목표로 저장
 
@@ -883,9 +913,9 @@ q^\ast_{m,s,5}
 \end{bmatrix}^{T}
 $$
 
-Step 저장은 현재 로봇 자세를 미래에 재생할 목표 관절자세로 채택하는 과정입니다.
+Step 저장: 현재 로봇 자세를 미래에 재생할 목표 관절자세로 채택하는 과정
 
-### C4/P4: runtime과 end delay가 시간 파라미터를 정한다
+### C4/P4: runtime과 end delay의 시간 파라미터 결정
 
 코드:
 
@@ -913,9 +943,11 @@ T_{m,s}
 }
 $$
 
-`runtime`은 평균 관절속도 스케일을 정하고, `end_delay`는 목표 도달 후 자세 유지 시간을 정합니다.
+`runtime`: 평균 관절속도 스케일 결정
 
-### C5/P5: `/set_position`은 원하는 관절 운동을 시작한다
+`end_delay`: 목표 도달 후 자세 유지 시간 결정
+
+### C5/P5: `/set_position` 기반 관절 운동 시작
 
 코드:
 
@@ -946,11 +978,13 @@ p_i^\ast
 T
 $$
 
-상위 Python 노드는 목표 position과 이동 시간을 보내고, 하위 Dynamixel 제어 계층이 그 목표를 추종합니다.
+상위 Python 노드: 목표 position과 이동 시간 전송
+
+하위 Dynamixel 제어 계층: 해당 목표 추종
 
 ### C6/P6: 서보 오차가 토크가 되고 동역학을 움직인다
 
-코드 관점에서는 `/set_position` 발행 뒤 Dynamixel 쪽에서 엔코더 피드백이 닫힌 루프를 이룹니다.
+코드 관점: `/set_position` 발행 뒤 Dynamixel 쪽에서 엔코더 피드백 폐루프 구성
 
 물리:
 
@@ -975,7 +1009,9 @@ M(q)\ddot{q}
 \tau
 $$
 
-위치 오차 $e_i$가 서보 토크 $\tau_i$로 변환되고, 이 토크가 실제 링크 관성, 중력, 마찰을 이기며 $q(t)$를 바꿉니다.
+위치 오차 $e_i$: 서보 토크 $\tau_i$로 변환
+
+이 토크가 실제 링크 관성, 중력, 마찰을 이기며 $q(t)$ 변경
 
 ### C7/P7: Motion 완료와 상위 시나리오 재개
 
@@ -997,7 +1033,7 @@ T_{m,s}+H_{m,s}
 \mathtt{/move\_resume=True}
 $$
 
-마지막 Step의 이동과 유지 시간이 끝나면 매니퓰레이터 동작 완료 이벤트가 상위 시나리오로 전달됩니다.
+마지막 Step의 이동과 유지 시간 종료 후 매니퓰레이터 동작 완료 이벤트를 상위 시나리오로 전달
 
 ### 한눈에 보는 대응식
 
@@ -1024,7 +1060,7 @@ $$
 
 ## 18. 코드 읽기 체크리스트
 
-코드를 읽을 때는 다음 대응을 계속 떠올리면 됩니다.
+코드 읽기 시 참고할 대응:
 
 | 코드 | 물리량 |
 | --- | --- |

@@ -16,7 +16,7 @@ Web UI
   -> Web UI
 ```
 
-배송은 `/mediapipe/start`, 회수는 `/inference_switch`와 `/item_detector/start`로 인식 흐름을 시작한다.
+배송은 `/mediapipe/start`, 회수는 `/inference_switch`와 `/item_detector/start`로 인식 흐름 시작.
 
 ## ROS2 workspace 구조
 
@@ -31,7 +31,7 @@ Web UI
 | `turtlebot3_ws/src/sllidar_ros2` | LiDAR `/scan` 발행 |
 | `turtlebot3_ws/src/turtlebot3`, `turtlebot3_msgs` | base bringup, robot description, Nav2 설정, 메시지 |
 
-수동조작용 `turtlebot3_teleop`와 지도 생성을 위한 `turtlebot3_cartographer`는 TurtleBot3 소스 안에 보존한다.
+수동조작용 `turtlebot3_teleop`와 지도 생성을 위한 `turtlebot3_cartographer`는 TurtleBot3 소스 안에 보존.
 
 ## 주요 토픽
 

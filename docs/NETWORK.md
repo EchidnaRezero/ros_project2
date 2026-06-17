@@ -22,11 +22,11 @@
 | Debug URL | `https://echidnarezero.github.io/ros_project2/web_client/debug.html` |
 | 입력할 서버 주소 | `wss://<TUNNEL_WSS_URL>` |
 
-Web UI에서 방, 물품, 배송/회수 요청을 입력한다.
+Web UI에서 방, 물품, 배송/회수 요청 입력.
 
 ## WebSocket bridge
 
-Jetson 내부 WebSocket bridge는 ROS2 topic과 Web UI 명령을 연결한다.
+Jetson 내부 WebSocket bridge는 ROS2 topic과 Web UI 명령 연결.
 
 | 항목 | 기준 |
 |---|---|
@@ -35,7 +35,7 @@ Jetson 내부 WebSocket bridge는 ROS2 topic과 Web UI 명령을 연결한다.
 | 발행 topic | `/move_request` |
 | 구독 topic | `/move_finish` |
 
-Bridge는 허용된 명령만 `/move_request`로 변환한다.
+Bridge는 허용된 명령만 `/move_request`로 변환.
 
 | 값 종류 | 허용 값 |
 |---|---|
@@ -45,7 +45,7 @@ Bridge는 허용된 명령만 `/move_request`로 변환한다.
 
 ## Cloudflare quick tunnel
 
-외부 브라우저가 Jetson 내부 bridge에 직접 접근하기 어려운 경우 quick tunnel을 사용한다.
+외부 브라우저가 Jetson 내부 bridge에 직접 접근하기 어려운 경우 quick tunnel 사용.
 
 전체 미션 실행:
 
@@ -61,15 +61,15 @@ Bridge와 tunnel만 따로 실행:
 
 운영 순서:
 
-1. Jetson에서 미션 또는 bridge/tunnel을 실행한다.
-2. 터미널에 출력된 WSS 주소를 확인한다.
-3. GitHub Pages UI 설정창에 WSS 주소를 입력한다.
+1. Jetson에서 미션 또는 bridge/tunnel 실행.
+2. 터미널에 출력된 WSS 주소 확인.
+3. GitHub Pages UI 설정창에 WSS 주소 입력.
 
-무료 quick tunnel 주소는 실행할 때마다 바뀔 수 있다.
+무료 quick tunnel 주소는 실행할 때마다 변경 가능.
 
 ## SSH / Tailscale
 
-Jetson 원격 관리는 SSH와 Tailscale을 사용한다.
+Jetson 원격 관리는 SSH와 Tailscale 사용.
 
 공개 문서 예시:
 

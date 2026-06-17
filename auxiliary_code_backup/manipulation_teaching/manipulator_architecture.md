@@ -1,8 +1,8 @@
 # Manipulator Package Architecture
 
-이 문서는 현재 패키지의 코드 구조와 매니퓰레이터 동작 흐름을 한눈에 보기 위해 만든 설명서입니다.
+현재 패키지의 코드 구조와 매니퓰레이터 동작 흐름 요약
 
-핵심은 두 개의 ROS 2 노드입니다.
+핵심 ROS 2 노드 2개
 
 - `manipulatorGUI`: 사용자가 직접 자세를 가르치고 Motion/Step을 JSON으로 저장하는 GUI 노드
 - `manipulatorCtrl`: 저장된 JSON 모션을 외부 명령(`/manipulator/motion_id`)으로 실행하는 자동 재생 노드
@@ -36,9 +36,11 @@ flowchart TD
 
 ## 2. 전체 실행 구조
 
-두 launch 파일 모두 먼저 Dynamixel low-level 노드를 실행합니다.
+두 launch 파일 모두 Dynamixel low-level 노드 선행 실행
 
-이 low-level 노드는 실제 Dynamixel과 통신하고, 이 패키지의 GUI/Ctrl 노드는 ROS 토픽과 서비스로만 명령을 주고받습니다.
+low-level 노드: 실제 Dynamixel 통신 담당
+
+GUI/Ctrl 노드: ROS 토픽과 서비스로 명령 송수신
 
 ```mermaid
 flowchart LR
@@ -103,7 +105,7 @@ flowchart LR
 
 ## 4. Motion 데이터 구조
 
-GUI에서 만든 모션은 내부적으로 다음 형태로 저장됩니다.
+GUI에서 만든 모션의 내부 저장 형태:
 
 ```python
 self.motions = [
@@ -121,7 +123,7 @@ self.times = [
 ]
 ```
 
-인덱스 의미는 다음과 같습니다.
+인덱스 의미:
 
 ```text
 motions[motion_index][step_index][dxl_index] = position
@@ -134,7 +136,7 @@ dxl_index 3 -> DXL_ID 14
 dxl_index 4 -> DXL_ID 15
 ```
 
-JSON 저장 시에는 다음 값들이 함께 저장됩니다.
+JSON 저장 시 함께 저장되는 값:
 
 ```json
 {
@@ -184,7 +186,7 @@ sequenceDiagram
 
 ## 6. GUI에서 run motion 동작
 
-`run motion` 버튼을 누르면 현재 선택된 Motion의 Step들이 순서대로 실행됩니다.
+`run motion` 버튼 클릭 시 현재 선택된 Motion의 Step 순차 실행
 
 ```mermaid
 flowchart TD
@@ -212,7 +214,7 @@ flowchart TD
 
 ## 7. 자동 실행 노드 동작
 
-`manipulatorCtrl.py`는 GUI 없이 저장된 JSON을 재생합니다.
+`manipulatorCtrl.py`: GUI 없이 저장된 JSON 재생
 
 ```mermaid
 sequenceDiagram
@@ -246,23 +248,23 @@ sequenceDiagram
 
 ### `manipulatorGUI.py`
 
-- PyQt5 GUI와 ROS 2 Node를 동시에 상속합니다.
-- `DynamixelMotor` 클래스로 각 모터 ID를 감쌉니다.
-- 버튼 클릭 콜백에서 토크, 위치 읽기, 위치 저장, 모션 실행, JSON 저장/불러오기를 처리합니다.
-- GUI 실행 중에는 별도 thread에서 `rclpy.spin()`을 돌려 Qt 이벤트 루프와 ROS 콜백을 같이 사용합니다.
+- PyQt5 GUI와 ROS 2 Node 동시 상속
+- `DynamixelMotor` 클래스로 각 모터 ID 래핑
+- 버튼 클릭 콜백에서 토크, 위치 읽기, 위치 저장, 모션 실행, JSON 저장/불러오기 처리
+- GUI 실행 중 별도 thread에서 `rclpy.spin()` 실행, Qt 이벤트 루프와 ROS 콜백 병행 사용
 
 ### `manipulatorCtrl.py`
 
-- 시작 시 `saved_motions.json`을 읽습니다.
-- `/manipulator/motion_id`를 받으면 해당 Motion을 실행합니다.
-- Motion 실행 중에는 중복 실행을 막기 위해 `is_playing` 플래그를 사용합니다.
-- Motion이 끝나고 다음 Motion이 없으면 `/move_resume`으로 완료 신호를 보냅니다.
+- 시작 시 `saved_motions.json` 읽기
+- `/manipulator/motion_id` 수신 시 해당 Motion 실행
+- Motion 실행 중 중복 실행 방지를 위해 `is_playing` 플래그 사용
+- Motion 종료 후 다음 Motion이 없으면 `/move_resume`으로 완료 신호 발행
 
 ### `manipulatorGUI.ui`
 
-- Qt Designer에서 만든 화면 배치 파일입니다.
-- 코드에서 `uic.loadUiType()`으로 읽어 Python GUI 객체에 연결합니다.
-- `readButton`, `torqueOnButton`, `stepRunButton` 같은 위젯 이름이 `manipulatorGUI.py`의 콜백과 연결됩니다.
+- Qt Designer에서 만든 화면 배치 파일
+- 코드에서 `uic.loadUiType()`으로 읽어 Python GUI 객체에 연결
+- `readButton`, `torqueOnButton`, `stepRunButton` 같은 위젯 이름과 `manipulatorGUI.py` 콜백 연결
 
 ### `launch/manipulatorGUI.launch.py`
 

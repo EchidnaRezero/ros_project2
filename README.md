@@ -1,10 +1,16 @@
 # ROS2 AMR Manipulator Delivery Robot
 
-웹 화면에서 물품 배송/회수를 요청하면 Jetson에서 ROS2 로봇이 이동, 인식, 로봇팔 동작, 완료 알림까지 처리하는 프로젝트다.
+웹 화면에서 물품 배송/회수를 요청하면 Jetson에서 ROS2 로봇이 이동, 인식, 로봇팔 동작, 완료 알림까지 처리하는 프로젝트.
 
 [Web UI 열기](https://echidnarezero.github.io/ros_project2/web_client/)
 
 ## 무엇을 하는 프로젝트인가
+
+미션 UI와 사용자 흐름의 기준 이미지는 `guide/mission/s0.png`~`s6.png` 참고.
+
+현재 Web UI와 실행 방식은 해당 가이드를 기준으로 하되, 실제 Jetson/ROS2 실행 환경, 네트워크 연결 방식, GitHub Pages 배포, Cloudflare tunnel 사용, 조작 편의성 때문에 일부 커스터마이징 적용.
+
+상세 미션 흐름과 실행 순서는 `docs/MISSION.md` 참고.
 
 ```text
 Web UI
@@ -16,7 +22,7 @@ Web UI
   -> Web UI 완료 표시
 ```
 
-사용자는 웹에서 방과 물품을 고른다. 로봇은 목적지로 이동한 뒤 배송이면 손동작을 확인하고, 회수면 카메라로 물품을 인식한다. 이후 로봇팔이 저장된 동작을 실행한다.
+사용자는 웹에서 방과 물품 선택. 로봇은 목적지로 이동한 뒤 배송이면 손동작 확인, 회수면 카메라로 물품 인식. 이후 로봇팔이 저장된 동작 실행.
 
 ## 사용 환경
 
@@ -36,14 +42,14 @@ Web UI
 
 ## 아카이브와 재현 기준
 
-이 저장소는 당시 Jetson 실행 환경을 보존하기 위한 아카이브 성격의 코드베이스다. 일부 경로는 범용 배포용으로 추상화하지 않고 Jetson 기준값을 그대로 남겼다.
+이 저장소는 당시 Jetson 실행 환경을 보존하기 위한 아카이브 성격의 코드베이스. 일부 경로는 범용 배포용으로 추상화하지 않고 Jetson 기준값 유지.
 
 | 경로 | 의미 |
 |---|---|
 | `/home/jetson/turtlebot3_ws` | Jetson의 ROS2 workspace 기준 경로 |
 | `/home/jetson/mp_env` | MediaPipe 실행용 Python 가상환경 기준 경로 |
 
-재현할 때는 위 경로에 맞춰 workspace와 venv를 구성하거나, 리팩토링 시 환경변수/ROS parameter/package share 경로 기준으로 바꾸면 된다.
+재현 시 위 경로에 맞춰 workspace와 venv 구성. 리팩토링 시 환경변수/ROS parameter/package share 경로 기준으로 변경 가능.
 
 ## 실행 방법
 
@@ -58,11 +64,11 @@ MAP_FILE=~/turtlebot3_ws/maps/map_6f.yaml ~/turtlebot3_ws/scripts/start_mission_
 
 그다음:
 
-1. RViz에서 `2D Pose Estimate`로 로봇 시작 위치를 찍는다.
-2. [Web UI](https://echidnarezero.github.io/ros_project2/web_client/)를 연다.
-3. `urls` tmux 창에 나온 `wss://...` 주소를 Web UI에 입력한다.
-4. 방 A/B와 물품을 고른 뒤 배송 또는 회수를 누른다.
-5. 상태는 tmux의 `debug`, `mission`, `nav`, `vision`, `manipulator` 창에서 확인한다.
+1. RViz에서 `2D Pose Estimate`로 로봇 시작 위치 지정.
+2. [Web UI](https://echidnarezero.github.io/ros_project2/web_client/) 열기.
+3. `urls` tmux 창에 나온 `wss://...` 주소를 Web UI에 입력.
+4. 방 A/B와 물품을 고른 뒤 배송 또는 회수 선택.
+5. tmux의 `debug`, `mission`, `nav`, `vision`, `manipulator` 창에서 상태 확인.
 
 종료:
 
@@ -84,4 +90,4 @@ MAP_FILE=~/turtlebot3_ws/maps/map_6f.yaml ~/turtlebot3_ws/scripts/start_mission_
 
 ## 마스킹 기준
 
-IP, SSH key 경로, Tailscale 계정, tunnel 주소는 `<JETSON_HOST>`, `<SSH_KEY_PATH>`, `<TUNNEL_WSS_URL>`처럼 표기한다. 모델 파일 본체와 TensorRT engine 파일은 Jetson 런타임 리소스로 관리한다.
+IP, SSH key 경로, Tailscale 계정, tunnel 주소는 `<JETSON_HOST>`, `<SSH_KEY_PATH>`, `<TUNNEL_WSS_URL>`처럼 표기. 모델 파일 본체와 TensorRT engine 파일은 Jetson 런타임 리소스로 관리.

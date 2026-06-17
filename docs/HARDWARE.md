@@ -9,7 +9,7 @@
 | 실행 관리 | `tmux` |
 | 빌드 도구 | `colcon` |
 
-새 Jetson에서 Galactic을 설치하려면 Ubuntu/JetPack 조합이 맞아야 한다. Galactic은 오래된 배포판이므로, 기존 Jetson 이미지 또는 동일한 Ubuntu 20.04 기반 환경을 기준으로 재현하는 것이 안전하다.
+새 Jetson에서 Galactic 설치 시 Ubuntu/JetPack 조합 확인 필요. Galactic은 오래된 배포판이므로, 기존 Jetson 이미지 또는 동일한 Ubuntu 20.04 기반 환경 기준 재현 권장.
 
 ## 하드웨어 구성
 
@@ -21,7 +21,7 @@
 | LiDAR | navigation scan 입력 |
 | IMX219 CSI camera | camera/vision 입력 |
 
-USB 장치는 연결 순서에 따라 `/dev/ttyACM*`, `/dev/ttyUSB*` 번호가 바뀔 수 있으므로 역할 기반 udev 장치명을 사용한다.
+USB 장치는 연결 순서에 따라 `/dev/ttyACM*`, `/dev/ttyUSB*` 번호가 바뀔 수 있으므로 역할 기반 udev 장치명 사용.
 
 ## udev 장치명
 
@@ -47,7 +47,7 @@ sudo udevadm trigger
 
 ## 카메라
 
-카메라는 IMX219 CSI camera이며, 입력 기준은 `csi://0`이다.
+카메라는 IMX219 CSI camera, 입력 기준은 `csi://0`.
 
 Vision 시작 전:
 
@@ -74,4 +74,4 @@ colcon build --symlink-install
 source install/setup.bash
 ```
 
-전체 빌드가 막히면 먼저 `docs/issues/KNOWN_PATH_ISSUES.md`의 Jetson 전용 경로와 장치명을 확인한다.
+전체 빌드가 막히면 먼저 `docs/issues/KNOWN_PATH_ISSUES.md`의 Jetson 전용 경로와 장치명 확인.

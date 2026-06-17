@@ -1,6 +1,6 @@
 # Augmentation Source
 
-`object2_colab_augmented` 데이터셋을 만들 때 사용한 증강 생성 코드다.
+`object2_colab_augmented` 데이터셋 생성에 사용한 증강 생성 코드
 
 ## 포함
 
@@ -14,7 +14,7 @@ build_augmented_voc_dataset.py
 python build_augmented_voc_dataset.py --source object2 --output object2_colab_augmented
 ```
 
-입력 `object2`는 VOC 형식이어야 한다.
+입력 `object2`: VOC 형식 필요
 
 ```text
 Annotations/
@@ -23,4 +23,4 @@ ImageSets/
 labels.txt
 ```
 
-출력 `object2_colab_augmented`는 Colab 학습용으로 압축해 `object2_colab_augmented.zip`으로 사용한다.
+출력 `object2_colab_augmented`: Colab 학습용 압축 파일 `object2_colab_augmented.zip`으로 사용
