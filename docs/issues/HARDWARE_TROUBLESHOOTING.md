@@ -45,12 +45,6 @@ systemctl is-active nvargus-daemon
 gst-launch-1.0 nvarguscamerasrc sensor-id=0 num-buffers=30 ! "video/x-raw(memory:NVMM), width=1280, height=720, framerate=30/1, format=NV12" ! fakesink
 ```
 
-## Hand Gesture / MediaPipe
-
-`lambda_sign` 조건은 pinch/OK에 가까움.
-
-세부 조건은 `docs/LAMBDA_GESTURE_GUIDE.html`에서 확인.
-
 ## 로그 확인
 
 ROS 로그:

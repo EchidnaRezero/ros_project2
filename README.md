@@ -6,11 +6,7 @@
 
 ## 무엇을 하는 프로젝트인가
 
-미션 UI와 사용자 흐름의 기준 이미지는 `guide/mission/s0.png`~`s6.png` 참고.
-
-현재 Web UI와 실행 방식은 해당 가이드를 기준으로 하되, 실제 Jetson/ROS2 실행 환경, 네트워크 연결 방식, GitHub Pages 배포, Cloudflare tunnel 사용, 조작 편의성 때문에 일부 커스터마이징 적용.
-
-상세 미션 흐름과 실행 순서는 `docs/MISSION.md` 참고.
+미션 흐름과 실행 순서의 우선 문서는 `docs/MISSION.md`. `guide/mission/s0.png`~`s6.png`는 Web UI 사용자 흐름의 원형 이미지.
 
 ```text
 Web UI
@@ -28,6 +24,7 @@ Web UI
 
 | 항목 | 내용 |
 |---|---|
+| OS | Ubuntu 20.04 기반 Jetson image |
 | Robot middleware | ROS2 Galactic |
 | Edge computer | Jetson |
 | 이동 | TurtleBot3 base, Nav2, LiDAR |
