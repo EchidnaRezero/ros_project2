@@ -67,6 +67,16 @@ Bridge와 tunnel만 따로 실행:
 
 무료 quick tunnel 주소는 실행할 때마다 변경 가능.
 
+주소 확인:
+
+```bash
+cat ~/turtlebot3_ws/mission_urls.txt 2>/dev/null || true
+```
+
+Bridge는 Cloudflare 전용 코드 없이 `0.0.0.0:3000` WebSocket 서버를 열고, tunnel이 외부 `wss://` 요청을 Jetson 내부 bridge로 전달.
+
+데모용 bridge는 별도 token이나 Origin 검증 없이 허용된 명령만 ROS topic으로 변환.
+
 ## SSH / Tailscale
 
 Jetson 원격 관리는 SSH와 Tailscale 사용.

@@ -25,9 +25,13 @@ Web UI
 
 ```bash
 tmux ls
+ps -eo pid,ppid,stat,cmd | grep -Ei "mission|rtree|nav2|bringup|manipulator|dynamixel|camera|cloudflared" | grep -v grep
 ls -l /dev/ttyRtreeCon /dev/ttyManipCon /dev/ttyLidar /dev/video0 2>/dev/null
 systemctl is-active nvargus-daemon
+cat ~/turtlebot3_ws/mission_urls.txt 2>/dev/null || true
 ```
+
+`rtree-mission` tmux 세션이 이미 있으면 실행 중인 세션 상태를 먼저 확인.
 
 기본 기준:
 
@@ -64,6 +68,8 @@ MAP_FILE=~/turtlebot3_ws/maps/map_6f.yaml ~/turtlebot3_ws/scripts/start_mission_
 ```bash
 ~/turtlebot3_ws/scripts/stop_mission_tmux.sh
 ```
+
+완전 대기 상태가 필요하면 Dynamixel torque off를 별도로 확인. 절차는 `docs/issues/HARDWARE_TROUBLESHOOTING.md` 참고.
 
 ## tmux 창
 
@@ -118,8 +124,8 @@ tmux 창 이동은 `Ctrl-b`를 누른 뒤 창 번호 입력.
 - 배송 요청은 목적지 이동 성공 후 `/mediapipe/start=<item>` 발행.
 - 회수 요청은 목적지 이동 성공 후 `/inference_switch=True`와 `/item_detector/start=True` 발행.
 - 회수 요청의 `item` 값은 item detector에 미전달. detector는 감지된 지원 물품의 motion id 발행.
+- 현재 `lambda_sign` 이름은 실제 손모양 조건과 다를 수 있음. 코드 기준은 MediaPipe landmark에서 엄지와 검지가 가까운 pinch/OK 형태.
 - quick tunnel 주소는 실행할 때마다 변경 가능.
-- `stop_mission_tmux.sh`는 미션 프로세스와 tmux 종료 기능. Dynamixel torque off는 별도 확인 필요.
 
 ## 확인용 ROS2 토픽
 
